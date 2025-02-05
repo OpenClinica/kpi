@@ -85,7 +85,7 @@ pyasn1
 redis==3.2.0
 
 # Keycloak authentication integration
--e git+https://github.com/OpenClinica/boss-oidc.git@29174ff0606e69ce5b44ba734b3742f153c4bbe9#egg=boss-oidc
+-e git+https://github.com/OpenClinica/boss-oidc.git@cea482294a73c742b953f3d1fc7fb9a60635fa28#egg=boss-oidc
 -e git+https://github.com/gushil/django-oidc.git@1fbbe169e785bab04cd9da5410245c97a18f3e38#egg=django-oidc
 -e git+https://github.com/jhuapl-boss/drf-oidc-auth.git@a6083cc58740587b6f765ddd7643234762d9f3b8#egg=drf-oidc-auth
 
