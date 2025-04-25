@@ -283,7 +283,7 @@ export function replaceSupportEmail(str) {
 }
 
 export function currentLang() {
-  return cookies.get(LANGUAGE_COOKIE_NAME) || 'en';
+  return 'en';
 }
 
 // langString contains name and code e.g. "English (en)"
