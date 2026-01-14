@@ -4,7 +4,7 @@
 #
 #    make pip_compile
 #
--e git+https://github.com/OpenClinica/boss-oidc.git@29174ff0606e69ce5b44ba734b3742f153c4bbe9#egg=boss-oidc
+-e git+https://github.com/OpenClinica/boss-oidc.git@cea482294a73c742b953f3d1fc7fb9a60635fa28#egg=boss-oidc
     # via -r dependencies/pip/requirements.in
 -e git+https://github.com/gushil/django-oidc.git@1fbbe169e785bab04cd9da5410245c97a18f3e38#egg=django-oidc
     # via -r dependencies/pip/requirements.in
