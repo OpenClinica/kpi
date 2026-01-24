@@ -121,7 +121,7 @@ MIDDLEWARE_CLASSES = (
     'corsheaders.middleware.CorsMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     'oc.middleware.OCSessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    # 'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.middleware.csrf.CsrfViewMiddleware',
     'oc.middleware.OCCsrfViewMiddleware',
@@ -246,9 +246,9 @@ TIME_ZONE = 'UTC'
 
 LOCALE_PATHS = (os.path.join(BASE_DIR, 'locale'),)
 
-USE_I18N = True
+USE_I18N = False
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
