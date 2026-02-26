@@ -10,7 +10,7 @@ const fetchData = async <T>(path: string, method = 'GET', data?: Json) => {
   };
 
   if (method === 'DELETE' || data) {
-    const csrfCookie = document.cookie.match(/occsrftoken=(\w{64})/);
+    const csrfCookie = document.cookie.match(/occsrftoken_v2=(\w{64})/);
     if (csrfCookie) {
       headers['X-CSRFToken'] = csrfCookie[1];
     }
