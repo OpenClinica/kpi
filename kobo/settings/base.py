@@ -64,6 +64,11 @@ CSRF_TRUSTED_ORIGINS = ALLOWED_DOMAINS
 CSRF_COOKIE_NAME = env.str('CSRF_COOKIE_NAME', 'occsrftoken_v2')
 CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', 'None')
 
+# Django's default SameSite=Lax causes Chrome to drop the session cookie when the OIDC callback
+# runs inside a cross-site iframe (e.g. staging, where Keycloak is on a different eTLD+1 than
+# the app). SameSite=None allows the cookie to be stored in that context, matching CSRF_COOKIE_SAMESITE above.
+SESSION_COOKIE_SAMESITE = env.str('SESSION_COOKIE_SAMESITE', 'None')
+
 SESSION_SAVE_EVERY_REQUEST = True
 
 ENKETO_CSRF_COOKIE_NAME = env.str('ENKETO_CSRF_COOKIE_NAME', '__csrf')
