@@ -69,6 +69,10 @@ CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', 'None')
 # the app). SameSite=None allows the cookie to be stored in that context, matching CSRF_COOKIE_SAMESITE above.
 SESSION_COOKIE_SAMESITE = env.str('SESSION_COOKIE_SAMESITE', 'None')
 
+# SameSite=None requires Secure=True; enforce it to prevent browsers silently dropping the cookie.
+if SESSION_COOKIE_SAMESITE == 'None':
+    SESSION_COOKIE_SECURE = True
+
 SESSION_SAVE_EVERY_REQUEST = True
 
 ENKETO_CSRF_COOKIE_NAME = env.str('ENKETO_CSRF_COOKIE_NAME', '__csrf')
