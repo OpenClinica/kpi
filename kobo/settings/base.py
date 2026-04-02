@@ -62,16 +62,22 @@ SESSION_COOKIE_NAME = env.str('SESSION_COOKIE_NAME', 'kobonaut_v2')
 CSRF_COOKIE_DOMAIN = None # always None for tenant isolation
 CSRF_TRUSTED_ORIGINS = ALLOWED_DOMAINS
 CSRF_COOKIE_NAME = env.str('CSRF_COOKIE_NAME', 'occsrftoken_v2')
-CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', 'None')
 
 # Django's default SameSite=Lax causes Chrome to drop the session cookie when the OIDC callback
 # runs inside a cross-site iframe (e.g. staging, where Keycloak is on a different eTLD+1 than
-# the app). SameSite=None allows the cookie to be stored in that context, matching CSRF_COOKIE_SAMESITE above.
+# the app). SameSite=None allows the cookie to be stored in that context.
 SESSION_COOKIE_SAMESITE = env.str('SESSION_COOKIE_SAMESITE', 'None')
+CSRF_COOKIE_SAMESITE = env.str('CSRF_COOKIE_SAMESITE', 'None')
 
-# SameSite=None requires Secure=True; enforce it to prevent browsers silently dropping the cookie.
-if SESSION_COOKIE_SAMESITE == 'None':
+# SameSite=None requires Secure=True; normalize and enforce to prevent browsers silently dropping
+# the cookie regardless of how the env var was cased (e.g. 'none', 'NONE', 'None').
+if SESSION_COOKIE_SAMESITE.strip().lower() == 'none':
+    SESSION_COOKIE_SAMESITE = 'None'
     SESSION_COOKIE_SECURE = True
+
+if CSRF_COOKIE_SAMESITE.strip().lower() == 'none':
+    CSRF_COOKIE_SAMESITE = 'None'
+    CSRF_COOKIE_SECURE = True
 
 SESSION_SAVE_EVERY_REQUEST = True
 
