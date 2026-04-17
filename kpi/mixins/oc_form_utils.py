@@ -12,8 +12,6 @@ class OCFormUtilsMixin:
                     readonly_val = 'false'
                 content['survey'][survey_col_idx]['oc_readonly'] = readonly_val
                 del content['survey'][survey_col_idx]['readonly']
-            else:
-                content['survey'][survey_col_idx]['oc_readonly'] = 'false'
 
     def _adjust_content_media_column(self, content):
         survey = content.get('survey', [])

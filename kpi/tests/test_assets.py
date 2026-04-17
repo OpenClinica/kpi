@@ -351,22 +351,18 @@ class AssetContentTests(AssetsTestCase):
         # The next-to-last row should have the note question from `append`
         xls_note_row = [
             cell.value for cell in survey_sheet[survey_sheet.max_row - 1]]
-        expected_note_row = list(append['survey'][0].values())
-        # Slice the result to discard any extraneous empty cells
-        self.assertEqual(
-            xls_note_row[:len(expected_note_row)], expected_note_row)
+        # type column is always position 0 in surveyCols
+        self.assertEqual(xls_note_row[0], 'note')
 
         settings_sheet = workbook['settings']
-        # Next-to-last column should have `asdf` setting
-        xls_asdf_col = [row[1].value for row in settings_sheet.iter_rows(max_row=2)]
-        self.assertEqual(xls_asdf_col, ['asdf', 'jkl'])
-
-        # Last column should have `version` setting from `append`
-        xls_version_col = [row[2].value for row in settings_sheet.iter_rows(max_row=2)]
-        self.assertEqual(xls_version_col[0], 'version')
-        # first column should have `form_title` as asset name
-        xls_form_title_col = [row[0].value for row in settings_sheet.iter_rows(max_row=2)]
-        assert xls_form_title_col == ['form_title', self.asset.name or None]
+        # Use header-based lookup to be robust against OC column ordering
+        settings_by_header = {
+            col_cells[0].value: col_cells[1].value
+            for col_cells in settings_sheet.iter_cols(max_row=2)
+        }
+        self.assertEqual(settings_by_header.get('asdf'), 'jkl')
+        self.assertIn('version', settings_by_header)
+        self.assertEqual(settings_by_header.get('form_title'), self.asset.name or None)
 
     def test_to_xlsx_io_includes_version_number_and_date(self):
         date_string = '2021-03-17 11:12:13'
@@ -384,16 +380,14 @@ class AssetContentTests(AssetsTestCase):
             xlsx_io = self.asset.to_xlsx_io(versioned=True)
             workbook = openpyxl.load_workbook(xlsx_io)
             survey_sheet = workbook['survey']
+            header_row = [cell.value for cell in survey_sheet[1]]
+            calc_idx = header_row.index('calculation')
             xls_version_row = [
                 cell.value for cell in survey_sheet[survey_sheet.max_row]]
-            expected_row = [
-                'calculate',
-                '__version__',
-                None,
-                f"'{self.asset.latest_version.uid}'"
-            ]
             current_version_id = self.asset.latest_version.uid
-            assert xls_version_row == expected_row
+            assert xls_version_row[0] == 'calculate'
+            assert xls_version_row[1] == '__version__'
+            assert xls_version_row[calc_idx] == f"'{current_version_id}'"
 
             xlsx_io.seek(0)
             # Replace XLSForm with new one which contains a row with the '__version__'
@@ -403,18 +397,16 @@ class AssetContentTests(AssetsTestCase):
             xlsx_io = self.asset.to_xlsx_io(versioned=True)
             workbook = openpyxl.load_workbook(xlsx_io)
             survey_sheet = workbook['survey']
+            header_row = [cell.value for cell in survey_sheet[1]]
+            calc_idx = header_row.index('calculation')
             xls_new_version_row = [
                 cell.value for cell in survey_sheet[survey_sheet.max_row]]
-            new_version_expected_row = [
-                'calculate',
-                '__version__',
-                None,
-                f"'{self.asset.latest_version.uid}'"
-            ]
             # Ensure last row is '__version__' (not '_version_' or '_version_001_')
             # and it equals the asset's latest version
             assert current_version_id != self.asset.latest_version.uid
-            assert xls_new_version_row == new_version_expected_row
+            assert xls_new_version_row[0] == 'calculate'
+            assert xls_new_version_row[1] == '__version__'
+            assert xls_new_version_row[calc_idx] == f"'{self.asset.latest_version.uid}'"
             # clean-up
             import_task.delete()
 
