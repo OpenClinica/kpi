@@ -38,7 +38,7 @@ OIDC_PROVIDERS = {
 OIDC_AUTH = {
     'OIDC_ENDPOINT': None,
     'OIDC_AUDIENCES': [],
-    'OIDC_RESOLVE_USER_FUNCTION': 'bossoidc2.backend.get_user_by_id',
+    'OIDC_RESOLVE_USER_FUNCTION': 'oc.backend.get_user_by_id',
     'OIDC_BEARER_TOKEN_EXPIRATION_TIME': 4 * 10, # 4 minutes
 }
 

@@ -249,19 +249,25 @@ class OCLogoutView(View):
 
     def post(self, request):
         """Log out the user."""
-        logout_url = self.redirect_url
-
+        logout_redirect_url = self.redirect_url
+        if logout_redirect_url == '/':
+            # Override the default logout URL '/' to prevent immediately starting
+            # a new login flow. When other services (for example, the Study
+            # Designer) still consider the user logged in, redirecting to '/'
+            # causes the form designer to attempt to re-authenticate the user
+            # right after logout.
+            logout_redirect_url = '/#/library/my-library' # library page home
         if request.user.is_authenticated:
             # Check if a method exists to build the URL to log out the user
             # from the OP.
             logout_from_op = self.get_settings("OIDC_OP_LOGOUT_URL_METHOD", "")
             if logout_from_op:
-                logout_url = import_string(logout_from_op)(request)
+                logout_redirect_url = import_string(logout_from_op)(request)
 
             # Log out the Django user if they were logged in.
             auth.logout(request)
 
-        return HttpResponseRedirect(logout_url)
+        return HttpResponseRedirect(logout_redirect_url)
 
     def get(self, request):
         """Log out the user."""

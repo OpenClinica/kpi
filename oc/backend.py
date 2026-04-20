@@ -174,6 +174,7 @@ def get_user_with_id(access_token, userinfo, subdomain=None):
         user = kc_user.user
         # Always sync user_type so user type changes in Keycloak are reflected on the next login
         if kc_user.user_type != usertype:
+            kpi_logging.info("Updating user_type for user '{}' from '{}' to '{}'".format(uid, kc_user.user_type, usertype))
             kc_user.user_type = usertype
             kc_user.save()
     except KeycloakModel.DoesNotExist: # user doesn't exist with a keycloak UID and subdomain
@@ -226,7 +227,6 @@ def get_roles(decoded_token):
             "LOGGER from OCAuthenticationBackend"
         )
     _log('get_roles').info('get_roles 1')
-    print('haha')
     try:
         # Session logins and Bearer tokens from password Grant Types
         if 'realm_access' in decoded_token:
@@ -426,8 +426,10 @@ class OpenIdConnectBackend(OIDCAuthenticationBackend): # pragma: no cover
             self.store_tokens(access_token, id_token)
             self.store_user_info(access_token)
             self.store_customer_info(access_token)
+            user_subdomain = get_subdomain(request)
+            self.request.session['subdomain'] = user_subdomain
             try:
-                return self.get_or_create_user(access_token, id_token, payload, get_subdomain(request))
+                return self.get_or_create_user(access_token, id_token, payload, user_subdomain)
             except SuspiciousOperation as exc:
                 LOGGER.warning("failed to get or create user: %s", exc)
                 return None
