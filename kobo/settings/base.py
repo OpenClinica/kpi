@@ -605,10 +605,11 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'kpi.paginators.Paginated',
     'PAGE_SIZE': 100,
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # SessionAuthentication and BasicAuthentication would be included by
-        # default
-        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
+        # SessionAuthentication must be first: it does not implement
+        # authenticate_header(), so DRF returns 403 (not 401) for unauthenticated
+        # requests, which is what tests and the application expect.
         'rest_framework.authentication.SessionAuthentication',
+        'mozilla_django_oidc.contrib.drf.OIDCAuthentication',
         'oidc_auth.authentication.BearerTokenAuthentication',
         'kpi.authentication.BasicAuthentication',
         'kpi.authentication.TokenAuthentication',

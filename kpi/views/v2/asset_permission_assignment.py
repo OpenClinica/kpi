@@ -1,5 +1,6 @@
 # coding: utf-8
 from django.db import transaction
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext as t
 from rest_framework import exceptions, viewsets, status, renderers
@@ -193,6 +194,8 @@ class AssetPermissionAssignmentViewSet(AssetNestedObjectViewsetMixin,
                 response = {'detail': t("Source and destination objects don't "
                                         "seem to have the same type")}
                 return Response(response, status=http_status)
+        elif not user.has_perm(PERM_VIEW_ASSET, source_asset):
+            raise Http404
         else:
             raise exceptions.PermissionDenied()
 

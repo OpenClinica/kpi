@@ -58,9 +58,11 @@ class AssetImportTaskTest(BaseTestCase):
 
     def _prepare_survey_content(self, survey):
         _survey = []
+        # OC adds 'readonly' to all survey rows during save, so exclude it for comparison
+        oc_added_keys = {'readonly'}
         for item in survey:
             _survey.append(
-                {k: v for k, v in item.items() if not k.startswith('$')}
+                {k: v for k, v in item.items() if not k.startswith('$') and k not in oc_added_keys}
             )
         return _survey
 

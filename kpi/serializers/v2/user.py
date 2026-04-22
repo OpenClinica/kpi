@@ -54,7 +54,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
     
     def get_subdomain(self, user):
         if user is not None:
-            return KeycloakModel.objects.get(user=user).subdomain
+            kc = KeycloakModel.objects.filter(user=user).first()
+            return kc.subdomain if kc else None
         return None
 
     @staticmethod

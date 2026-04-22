@@ -1,4 +1,5 @@
 # coding: utf-8
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import exceptions, renderers, status, viewsets
 from rest_framework.decorators import action
@@ -187,6 +188,8 @@ class AssetViewSet(AssetViewSetV2):
                 response = {
                     "detail": "Source and destination objects don't seem to have the same type"
                 }
+        elif not user.has_perm(PERM_VIEW_ASSET, source_asset):
+            raise Http404
         else:
             raise exceptions.PermissionDenied()
 

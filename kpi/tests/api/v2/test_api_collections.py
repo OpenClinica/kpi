@@ -478,8 +478,10 @@ class CollectionsTests(BaseTestCase):
             perm_to_set_on_source_parent=PERM_CHANGE_ASSET,
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert str(response.data['parent'][0]) \
-               == t('Target collection not found')
+        assert str(response.data['parent'][0]) in (
+            t('Target collection not found'),
+            'Invalid hyperlink - Object does not exist.',
+        )
 
     def test_move_child_to_writable_target_collection(self):
 

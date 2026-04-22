@@ -100,6 +100,7 @@ class AssetSnapshotViewSet(OpenRosaViewSetMixin, NoUpdateModelViewSet):
 
     @action(
         detail=True,
+        methods=['GET', 'HEAD'],
         renderer_classes=[OpenRosaFormListRenderer],
         url_path='formList',
     )
@@ -148,6 +149,7 @@ class AssetSnapshotViewSet(OpenRosaViewSetMixin, NoUpdateModelViewSet):
 
     @action(
         detail=True,
+        methods=['GET', 'HEAD'],
         renderer_classes=[OpenRosaManifestRenderer],
     )
     def manifest(self, request, *args, **kwargs):

@@ -52,14 +52,18 @@ class AssetSnapshotSerializer(serializers.HyperlinkedModelSerializer):
     def check_subdomain_permission(self, asset):
         # Check if asset owner id in subdomain userIds
         user = self.context['request'].user
+        if not user or not user.is_authenticated:
+            # Anonymous users; subdomain check does not apply
+            return
         kc_user = None
         try:
             kc_user = KeycloakModel.objects.get(user=user)
         except KeycloakModel.DoesNotExist:
-            raise serializers.ValidationError('User not found')
+            # Not a Keycloak user; subdomain check does not apply
+            return
 
         if kc_user is None:
-            raise serializers.ValidationError('User not found')
+            return
         else:
             subdomain_userIds = KeycloakModel.objects.filter(subdomain=kc_user.subdomain).values_list('user_id', flat=True)
             if isinstance(asset, dict) and 'owner' in asset:

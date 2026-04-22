@@ -28,6 +28,7 @@ class AssetVersionTestCase(TestCase):
             '$prev',
             '$qpath',
             '$xpath',
+            'readonly',  # OC adds readonly to all rows during save
             ]
         for row in _vc['survey']:
             for att in pop_atts:

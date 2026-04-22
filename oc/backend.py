@@ -363,6 +363,8 @@ class OpenIdConnectBackend(OIDCAuthenticationBackend): # pragma: no cover
     """
 
     def configure(self, request):
+        if request is None:
+            return
         realm_name = get_realm_name(request)
         if isinstance(realm_name, str):
             client_secret = get_client_secret(realm_name)

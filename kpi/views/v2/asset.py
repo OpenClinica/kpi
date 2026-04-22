@@ -23,6 +23,7 @@ from kpi.constants import (
     CLONE_ARG_NAME,
     CLONE_COMPATIBLE_TYPES,
     CLONE_FROM_VERSION_ID_ARG_NAME,
+    PERM_VIEW_ASSET,
 )
 from kpi.deployment_backends.backends import DEPLOYMENT_BACKENDS
 from kpi.exceptions import (
@@ -874,13 +875,17 @@ class AssetViewSet(
         try:
             kc_user = KeycloakModel.objects.get(user=self.request.user)
         except KeycloakModel.DoesNotExist:
-            raise Http404
+            pass
 
         if kc_user is not None:
             subdomain = kc_user.subdomain
             subdomain_userIds = KeycloakModel.objects.filter(subdomain=subdomain).values_list('user_id', flat=True)
             if original_asset.owner.id not in subdomain_userIds:
                 raise Http404
+        elif not original_asset.has_perm(self.request.user, PERM_VIEW_ASSET):
+            # Outside of OC/Keycloak context, a user can only clone assets
+            # they can view.
+            raise Http404
         
         partial_update = isinstance(current_asset, Asset)
         cloned_data = self._prepare_cloned_data(original_asset, source_version, partial_update)

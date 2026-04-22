@@ -476,8 +476,9 @@ class Asset(ObjectPermissionMixin,
             if not id_string:
                 id_string = sluggify_label(filename)
                 settings['id_string'] = id_string
-            if not _title:
-                _title = filename
+            # filename (from import task name) takes priority over embedded
+            # form_title from the imported XLS content
+            _title = filename
         if self.asset_type not in [ASSET_TYPE_SURVEY, ASSET_TYPE_TEMPLATE]:
             # instead of deleting the settings, simply clear them out
             self.content['settings'] = {}

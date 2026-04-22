@@ -113,10 +113,11 @@ class KpiObjectPermissionsFilter:
         model_name = queryset.model._meta.model_name
         if model_name == 'asset' or model_name == 'collection':
             kc_user = None
-            try:
-                kc_user = KeycloakModel.objects.get(user=user)
-            except KeycloakModel.DoesNotExist:
-                pass
+            if user and user.is_authenticated:
+                try:
+                    kc_user = KeycloakModel.objects.get(user=user)
+                except KeycloakModel.DoesNotExist:
+                    pass
 
             if kc_user is not None:
                 subdomain = kc_user.subdomain
