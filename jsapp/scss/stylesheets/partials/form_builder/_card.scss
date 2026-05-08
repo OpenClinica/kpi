@@ -312,6 +312,20 @@ $cardIndicatorIconWidth: 21px;
        top: 10px;
     }
 
+    // Logic Builder icon: ƒx text glyph in blue, matching mockup
+    // (reqs-design/sbs/formdesigner/logic-builder/mockups/phase1.html:541)
+    &.card__buttons__button--logic {
+        color: #2c6cf0;
+        font-weight: 700;
+        font-size: 13px;
+        font-family: serif; // ƒ glyph reads better in serif
+        // Sits flush under the Settings (pencil) icon — no `top:` nudge.
+        // The progressive `top:` offsets on later siblings (--delete, --copy,
+        // --add) are unchanged so existing visual rhythm is preserved.
+
+        & > i { display: none; } // remove any leftover icon
+    }
+
     &.card__buttons__button--activated {
         color: colors.$kobo-gray-40;
         background-color: colors.$kobo-gray-92;
@@ -326,6 +340,22 @@ $cardIndicatorIconWidth: 21px;
     .k-icon {
       font-size: 18px;
     }
+}
+
+// Group headers are shorter than question rows but their icon strip now has
+// 5 icons (settings, fx, delete, clone, add-to-library). The cumulative
+// `top:` offsets above push the last icons past the group header height,
+// overlapping the first icons of nested rows. Inside group headers, compact
+// the icons so 5 fit without overflow.
+.group__header .card__buttons .card__buttons__button {
+  height: 16px;
+  line-height: 16px;
+
+  &.card__buttons__button--logic { top: 0; }
+  &.card__buttons__button--delete { top: 2px; }
+  &.card__buttons__button--copy,
+  &.card__buttons__button--clone { top: 4px; }
+  &.card__buttons__button--add { top: 6px; }
 }
 
 // overrides

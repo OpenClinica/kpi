@@ -512,3 +512,49 @@
         border-left: 0px;
     }
 }
+
+// Place the input + launcher on the same row, side by side.
+// Only applied when a launcher was injected — keeps existing field layouts unchanged.
+// Specificity bumped via parent class so it wins over `.card__settings__fields__field .settings__input { display: inline-block; }`.
+.card__settings__fields__field .settings__input.settings__input--with-launcher {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+
+  > textarea, > input[type="text"] {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+// "Open in Logic Builder" launcher button (P1.1 AC2).
+// Visible glyph is the literal `ƒx` text (matches mockups/phase1.html .logic-launch).
+.card__settings__logic-builder-launcher {
+  flex: 0 0 28px;
+  width: 28px;
+  align-self: stretch;
+  min-height: 28px;
+  border: 1px solid #c4c8cf;
+  border-radius: 3px;
+  background: #fff;
+  color: #2c6cf0;
+  font-family: serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #eef4fc;
+    border-color: #2c6cf0;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #2c6cf0;
+    outline-offset: 1px;
+  }
+}

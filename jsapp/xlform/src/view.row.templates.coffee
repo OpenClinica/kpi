@@ -125,6 +125,7 @@ module.exports = do ->
           </div>
           <div class="card__buttons">
             <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings" data-button-name="settings"><i class="k-icon k-icon-edit"></i></span>
+            <span class="card__buttons__button card__buttons__button--logic js-open-logic-builder" data-button-name="logic-builder" title="#{t("Open Logic Builder")}" aria-label="#{t("Open Logic Builder")}">ƒx</span>
             <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row" data-button-name="delete"><i class="k-icon k-icon-trash"></i></span>
       """
       if surveyView.features.multipleQuestions
@@ -161,6 +162,8 @@ module.exports = do ->
             <i class="k-icon k-icon-edit"></i>
           </span>
 
+          <span class="card__buttons__button card__buttons__button--logic js-open-logic-builder" data-button-name="logic-builder" title="#{t("Open Logic Builder")}" aria-label="#{t("Open Logic Builder")}">ƒx</span>
+
           <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-group">
             <i class="k-icon k-icon-trash"></i>
           </span>
@@ -190,6 +193,7 @@ module.exports = do ->
           </div>
           <div class="card__buttons">
             <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings" data-button-name="settings"><i class="k-icon k-icon-edit"></i></span>
+            <span class="card__buttons__button card__buttons__button--logic js-open-logic-builder" data-button-name="logic-builder" title="#{t("Open Logic Builder")}" aria-label="#{t("Open Logic Builder")}">ƒx</span>
             <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row" data-button-name="delete"><i class="k-icon k-icon-trash"></i></span>
           </div>
         </div>

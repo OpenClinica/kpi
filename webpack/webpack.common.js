@@ -89,6 +89,11 @@ const commonOptions = {
       scss: path.join(__dirname, '../jsapp/scss'),
       utils: path.join(__dirname, '../jsapp/js/utils'),
       test: path.join(__dirname, '../test'),
+      // Dedupe React across kpi and any linked package (e.g. @openclinica/logic-builder).
+      // Without this, a sibling package with its own node_modules/react in devDeps gets
+      // bundled twice, causing React error #321 (invalid hook call).
+      react: path.join(__dirname, '../node_modules/react'),
+      'react-dom': path.join(__dirname, '../node_modules/react-dom'),
     },
   },
   plugins: [

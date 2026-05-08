@@ -12,6 +12,8 @@ isAssetLockable = require('js/components/locking/lockingUtils').isAssetLockable
 hasAssetRestriction = require('js/components/locking/lockingUtils').hasAssetRestriction
 LOCKING_RESTRICTIONS = require('js/components/locking/lockingConstants').LOCKING_RESTRICTIONS
 LOCKING_UI_CLASSNAMES = require('js/components/locking/lockingConstants').LOCKING_UI_CLASSNAMES
+logicBuilderBridge = require('js/formbuild/logicBuilderBridge')
+{getItemType, getGroupKind} = require('js/formbuild/logicBuilderRow')
 
 module.exports = do ->
   surveyApp = {}
@@ -61,6 +63,7 @@ module.exports = do ->
       "click .js-select-row": "selectRow"
       "click .js-select-row--force": "forceSelectRow"
       "click .js-toggle-card-settings": "toggleCardSettings"
+      "click .js-open-logic-builder": "openLogicBuilder"
       "click .js-toggle-group-expansion": "toggleGroupExpansion"
       "click .js-toggle-row-multioptions": "toggleRowMultioptions"
       "click .js-close-warning": "closeWarningBox"
@@ -276,6 +279,19 @@ module.exports = do ->
 
     toggleCardSettings: (evt)->
       @_getViewForTarget(evt).toggleSettings()
+
+    openLogicBuilder: (evt) ->
+      evt.preventDefault()
+      evt.stopPropagation()
+      view = @_getViewForTarget(evt)
+      row = view.model
+      attrTab = $(evt.currentTarget).data('logicTab') or undefined
+      logicBuilderBridge.openLogicBuilder({
+        row: row,
+        itemType: getItemType(row),
+        groupKind: getGroupKind(row),
+        initialTab: attrTab,
+      })
 
     toggleGroupExpansion: (evt)->
       view = @_getViewForTarget(evt)
