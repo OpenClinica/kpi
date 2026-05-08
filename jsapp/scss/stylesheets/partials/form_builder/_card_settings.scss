@@ -514,17 +514,27 @@
 }
 
 // Place the input + launcher on the same row, side by side.
-// Only applied when a launcher was injected — keeps existing field layouts unchanged.
-// Specificity bumped via parent class so it wins over `.card__settings__fields__field .settings__input { display: inline-block; }`.
+// Two cases:
+//   1. The class is on the existing .settings__input span (default / calculation
+//      mixins). Specificity bump beats the inherited `display: inline-block`.
+//   2. The class is on a freestanding wrapper div around just the input +
+//      launcher (the _isRepeat mixin uses this so the surrounding checkbox +
+//      "Automatic Repeat Count:" caption keep their own line breaks).
+.settings__input--with-launcher,
 .card__settings__fields__field .settings__input.settings__input--with-launcher {
   display: flex;
   align-items: stretch;
   gap: 6px;
+}
 
-  > textarea, > input[type="text"] {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
+// `> input[type="text"]` doesn't match inputs created via `$('<input/>')`
+// without an explicit type attribute (HTML defaults to text but the attribute
+// selector requires the attribute to be present). `:not([type])` covers that.
+.settings__input--with-launcher > textarea,
+.settings__input--with-launcher > input[type="text"],
+.settings__input--with-launcher > input:not([type]) {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 // "Open in Logic Builder" launcher button (P1.1 AC2).

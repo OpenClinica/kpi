@@ -667,7 +667,20 @@ module.exports = do ->
       viewRowDetail.Templates.checkbox @cid, @model.key, t("Repeat"), t("Repeat this group if necessary")
     afterRender: ->
       @$('.settings__input').append(@$label_repeat_count)
-      @$('.settings__input').append(@$repeat_count)
+
+      # The repeat-count text input sits below a checkbox + caption span, so we
+      # cannot make the surrounding `.settings__input` a flex row — that would
+      # collapse the line breaks. Wrap the input + launcher in their own flex
+      # container instead.
+      if isLogicTabApplicable(@rowView?.model, 'repeatCount')
+        $launcherRow = $('<div class="settings__input--with-launcher" style="margin-top: 10px;"></div>')
+        @$repeat_count.css('margin-top', '0')
+        $launcherRow.append(@$repeat_count)
+        $launcherRow.append(logicBuilderLauncherHtml('repeatCount', t('Repeat Count')))
+        @$('.settings__input').append($launcherRow)
+      else
+        @$('.settings__input').append(@$repeat_count)
+
       @$repeat_count.attr('disabled', true)
 
       if @model.getValue()?
@@ -694,10 +707,6 @@ module.exports = do ->
           @$repeat_count.blur()
 
       @listenForCheckboxChange()
-
-      if isLogicTabApplicable(@rowView?.model, 'repeatCount')
-        @$('.settings__input').addClass('settings__input--with-launcher')
-                              .append(logicBuilderLauncherHtml('repeatCount', t('Repeat Count')))
 
   viewRowDetail.DetailViewMixins.repeat_count =
     onOcCustomEvent: (ocCustomEventArgs) ->

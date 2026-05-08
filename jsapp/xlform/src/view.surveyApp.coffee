@@ -64,6 +64,7 @@ module.exports = do ->
       "click .js-select-row--force": "forceSelectRow"
       "click .js-toggle-card-settings": "toggleCardSettings"
       "click .js-open-logic-builder": "openLogicBuilder"
+      "keydown span.js-open-logic-builder": "openLogicBuilderKey"
       "click .js-toggle-group-expansion": "toggleGroupExpansion"
       "click .js-toggle-row-multioptions": "toggleRowMultioptions"
       "click .js-close-warning": "closeWarningBox"
@@ -292,6 +293,14 @@ module.exports = do ->
         groupKind: getGroupKind(row),
         initialTab: attrTab,
       })
+
+    # Span items don't get native Enter/Space-to-click behavior; handle it
+    # so screen-reader / keyboard users can activate the item-tile button.
+    # The per-attribute launchers are real <button> elements and don't need
+    # this handler — the selector scopes to span only.
+    openLogicBuilderKey: (evt) ->
+      if evt.key is 'Enter' or evt.key is ' ' or evt.keyCode is 13 or evt.keyCode is 32
+        @openLogicBuilder(evt)
 
     toggleGroupExpansion: (evt)->
       view = @_getViewForTarget(evt)
