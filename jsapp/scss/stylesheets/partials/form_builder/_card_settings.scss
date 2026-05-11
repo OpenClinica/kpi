@@ -1,6 +1,11 @@
 @use 'scss/breakpoints';
 @use '~kobo-common/src/styles/colors';
 
+// Logic Builder accent — same hue used for the item-tile ƒx button in
+// `_card.scss`. Mockup-specified (phase1.html:541); kept distinct from
+// `colors.$kobo-blue` which is a cyan-shifted shade.
+$_lb-accent: #2c6cf0;
+
 // ==========================================================================
 // Card settings tabs
 // ==========================================================================
@@ -544,10 +549,10 @@
   width: 28px;
   align-self: stretch;
   min-height: 28px;
-  border: 1px solid #c4c8cf;
+  border: 1px solid colors.$kobo-gray-85;
   border-radius: 3px;
-  background: #fff;
-  color: #2c6cf0;
+  background: colors.$kobo-white;
+  color: $_lb-accent;
   font-family: serif;
   font-size: 14px;
   font-weight: 700;
@@ -559,12 +564,12 @@
   justify-content: center;
 
   &:hover {
-    background: #eef4fc;
-    border-color: #2c6cf0;
+    background: colors.$kobo-light-blue;
+    border-color: $_lb-accent;
   }
 
   &:focus-visible {
-    outline: 2px solid #2c6cf0;
+    outline: 2px solid $_lb-accent;
     outline-offset: 1px;
   }
 }

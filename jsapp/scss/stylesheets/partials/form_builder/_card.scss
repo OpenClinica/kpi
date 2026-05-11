@@ -2,6 +2,11 @@
 @use 'scss/z-indexes';
 @use '~kobo-common/src/styles/colors';
 
+// Logic Builder accent. The hue is mockup-specified
+// (reqs-design/sbs/formdesigner/logic-builder/mockups/phase1.html:541) and is
+// intentionally distinct from `colors.$kobo-blue` (#2095f3 — more cyan-shifted).
+$_lb-accent: #2c6cf0;
+
 // ==========================================================================
 // Card (incl. Header and Expanded)
 // ==========================================================================
@@ -315,7 +320,7 @@ $cardIndicatorIconWidth: 21px;
     // Logic Builder icon: ƒx text glyph in blue, matching mockup
     // (reqs-design/sbs/formdesigner/logic-builder/mockups/phase1.html:541)
     &.card__buttons__button--logic {
-        color: #2c6cf0;
+        color: $_lb-accent;
         font-weight: 700;
         font-size: 13px;
         font-family: serif; // ƒ glyph reads better in serif
