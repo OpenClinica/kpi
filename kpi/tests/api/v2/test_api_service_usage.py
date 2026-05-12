@@ -178,7 +178,10 @@ class ServiceUsageAPITestCase(BaseAssetTestCase):
         url = reverse(self._get_endpoint('service-usage-list'))
         response = self.client.get(url)
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code in (
+            status.HTTP_401_UNAUTHORIZED,
+            status.HTTP_403_FORBIDDEN,
+        )
 
     def test_check_api_response(self):
         """

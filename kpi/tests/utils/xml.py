@@ -4,8 +4,15 @@ from lxml import etree
 
 
 def get_form_and_submission_tag_names(form: str, submission: str) -> tuple[str, str]:
-    submission_root_name = etree.fromstring(submission).tag
-    tree = etree.ElementTree(etree.fromstring(form))
+    def _xml_input(value: str):
+        # lxml rejects unicode strings with an XML encoding declaration.
+        # Use bytes in that case.
+        if isinstance(value, str) and value.lstrip().startswith("<?xml"):
+            return value.encode("utf-8")
+        return value
+
+    submission_root_name = etree.fromstring(_xml_input(submission)).tag
+    tree = etree.ElementTree(etree.fromstring(_xml_input(form)))
     root = tree.getroot()
     # We cannot use `root.nsmap` directly because the default namespace key is
     # `None`, and `find()` cannot search a namespace with equals `None`.

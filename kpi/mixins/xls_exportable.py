@@ -272,7 +272,21 @@ class XlsExportableMixin:
             append = kwargs.setdefault('append', {})
             # We want to keep the order and append `version` at the end.
             append_settings = OrderedDict(append.setdefault('settings', {}))
+            append_settings.setdefault('version', self.version_info())
             kwargs['append']['settings'] = append_settings
+
+            # Also append a version marker row to the survey sheet. Keep it last
+            # so callers can safely append their own rows before it.
+            append_survey = append.setdefault('survey', [])
+            latest_uid = getattr(getattr(self, 'latest_version', None), 'uid', None)
+            if latest_uid:
+                append_survey.append(
+                    {
+                        'type': 'calculate',
+                        'name': '__version__',
+                        'calculation': f"'{latest_uid}'",
+                    }
+                )
         try:
             def _add_contents_to_sheet(sheet, contents):
                 cols = []
@@ -313,3 +327,21 @@ class XlsExportableMixin:
 
         output.seek(0)
         return output
+
+    def version_info(self):
+        """
+        Returns a human-readable version string for XLS exports.
+        Kept as a separate method to keep `to_xlsx_io()` focused.
+        """
+        # `latest_version` exists for versioned assets; guard defensively.
+        version_number = getattr(getattr(self, 'latest_version', None), 'version_id', None)
+        if version_number is None:
+            version_number = 1
+        date_modified = getattr(self, 'date_modified', None)
+        if date_modified:
+            try:
+                date_str = date_modified.strftime('%Y-%m-%d %H:%M:%S')
+            except Exception:
+                date_str = str(date_modified)
+            return f'{version_number} ({date_str})'
+        return str(version_number)

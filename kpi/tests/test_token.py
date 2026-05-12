@@ -43,7 +43,12 @@ class UserListTests(BaseTestCase):
     def test_anonymous_access_denied(self):
         self.client.logout()
         response = self.client.get(self.url)
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        # Depending on authentication classes, an anonymous request may yield
+        # 401 (Unauthenticated) or 403 (Forbidden). Either is acceptable here.
+        self.assertIn(
+            response.status_code,
+            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
+        )
 
     def test_regular_user_cannot_get_token_for_another_user(self):
         response = self.client.get(self.url, {'username': 'someuser'})

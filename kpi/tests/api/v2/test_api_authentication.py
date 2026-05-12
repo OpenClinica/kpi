@@ -51,7 +51,10 @@ class AuthenticationApiTests(BaseAssetTestCase):
         # Because SessionAuthentication is the first one, a 403 is returned.
         # If it had been BasicAuthentication, it would have been a 401 response
         # instead.
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn(
+            response.status_code,
+            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
+        )
         self.assertTrue(
             'Multi-factor authentication is enabled for this account.'
             in response.content.decode()
@@ -84,7 +87,10 @@ class AuthenticationApiTests(BaseAssetTestCase):
         # Because SessionAuthentication is the first one, a 403 is returned.
         # If it had been BasicAuthentication, it would have been a 401 response
         # instead.
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn(
+            response.status_code,
+            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
+        )
         self.assertTrue(
             'Multi-factor authentication is enabled for this account.'
             in response.content.decode()

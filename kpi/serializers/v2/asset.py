@@ -466,18 +466,19 @@ class AssetSerializer(serializers.HyperlinkedModelSerializer):
         # caller's subdomain so that out-of-scope collections are treated as
         # "not found" by DRF rather than resolving the object and leaking its
         # existence through a different validation error.
-        user = self.context['request'].user
-        if user.is_anonymous:
-            fields['parent'].queryset = Asset.objects.none()
-        else:
-            try:
-                subdomain_user_ids = get_subdomain_user_ids(user)
-                fields['parent'].queryset = Asset.objects.filter(
-                    asset_type=ASSET_TYPE_COLLECTION,
-                    owner__in=subdomain_user_ids,
-                )
-            except KeycloakModel.DoesNotExist:
+        if 'parent' in fields:
+            user = self.context['request'].user
+            if user.is_anonymous:
                 fields['parent'].queryset = Asset.objects.none()
+            else:
+                try:
+                    subdomain_user_ids = get_subdomain_user_ids(user)
+                    fields['parent'].queryset = Asset.objects.filter(
+                        asset_type=ASSET_TYPE_COLLECTION,
+                        owner__in=subdomain_user_ids,
+                    )
+                except KeycloakModel.DoesNotExist:
+                    fields['parent'].queryset = Asset.objects.none()
 
         return fields
 
@@ -809,9 +810,10 @@ class AssetSerializer(serializers.HyperlinkedModelSerializer):
             access_types.append('superuser')
 
         if not access_types:
-            raise Exception(
-                f'{request.user.username} has unexpected access to {obj.uid}'
-            )
+            # Avoid turning permission mismatches into 500 errors.
+            # If a user can reach this serializer but no access type applies,
+            # report no access types rather than raising.
+            return []
 
         return access_types
 
@@ -964,7 +966,7 @@ class AssetListSerializer(AssetSerializer):
     def get_permissions(self, asset):
         try:
             asset_permission_assignments = self.context[
-                'object_permissions_per_asset'].get(asset.pk)
+                'object_permissions_per_asset'][asset.pk]
         except KeyError:
             # Maybe overkill, there are no reasons to enter here.
             # in the list context, `object_permissions_per_asset` should
@@ -1004,7 +1006,7 @@ class AssetListSerializer(AssetSerializer):
 
         try:
             asset_perm_assignments = self.context[
-                'object_permissions_per_asset'].get(asset.pk)
+                'object_permissions_per_asset'][asset.pk]
         except KeyError:
             # Maybe overkill, there are no reasons to enter here.
             # in the list context, `object_permissions_per_asset` should be

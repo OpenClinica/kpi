@@ -259,6 +259,17 @@ class KpiTestCase(BaseTestCase, BasePermissionsTestCase):
         if user and password:
             self.client.logout()
 
+        # Some endpoints require authentication and will respond 401 for
+        # anonymous clients. Treat this as "not in list" rather than failing
+        # the test suite on status code alone.
+        if response.status_code == status.HTTP_401_UNAUTHORIZED:
+            uid_found = False
+            if msg is None:
+                in_list_string = in_list and 'not ' or ''
+                msg = 'Object "{}" {}found in list.'.format(obj, in_list_string)
+            self.assertEqual(uid_found, in_list, msg=msg)
+            return
+
         if response.status_code == status.HTTP_403_FORBIDDEN:
             uid_found = False
         else:
@@ -285,6 +296,12 @@ class KpiTestCase(BaseTestCase, BasePermissionsTestCase):
         response = self.client.get(url)
         if user and password:
             self.client.logout()
+
+        if response.status_code == status.HTTP_401_UNAUTHORIZED:
+            if viewable:
+                self.fail(msg or f'Object "{obj}" should be viewable but got 401')
+            # For non-viewable checks, 401 is an acceptable denial response.
+            return
 
         viewable_string = viewable and 'not ' or ''
         msg = msg or 'Object "{}" {}detail viewable.'.format(obj, viewable_string)

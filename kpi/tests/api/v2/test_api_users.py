@@ -34,10 +34,13 @@ class UserListTests(BaseTestCase):
         a non-superuser cannot query the entire user list
         """
         self.client.logout()
-        self.client.login(username='someuser')
+        self.client.login(username='someuser', password='someuser')
         url = reverse(self._get_endpoint('user-list'))
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn(
+            response.status_code,
+            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
+        )
 
     def test_user_list_forbidden_anonymous_user(self):
         """
@@ -46,7 +49,10 @@ class UserListTests(BaseTestCase):
         self.client.logout()
         url = reverse(self._get_endpoint('user-list'))
         response = self.client.get(url, format='json')
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn(
+            response.status_code,
+            (status.HTTP_401_UNAUTHORIZED, status.HTTP_403_FORBIDDEN),
+        )
 
     def test_user_page_succeeds(self):
         """

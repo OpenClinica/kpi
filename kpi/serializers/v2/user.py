@@ -53,9 +53,13 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         return len(public_collection_ids)
     
     def get_subdomain(self, user):
-        if user is not None:
+        if user is None:
+            return None
+        try:
             return KeycloakModel.objects.get(user=user).subdomain
-        return None
+        except KeycloakModel.DoesNotExist:
+            # Some system users (e.g. AnonymousUser) may not have Keycloak rows.
+            return ''
 
     @staticmethod
     @cache_for_request

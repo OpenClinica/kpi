@@ -206,6 +206,11 @@ def get_user_permission_assignments(
     user_permission_assignments = []
     filtered_user_ids = None
 
+    # Some list endpoints build a per-asset cache; when the cache misses,
+    # callers may pass `None`. Treat it as "no assignments" instead of raising.
+    if object_permission_assignments is None:
+        object_permission_assignments = []
+
     if not user or is_user_anonymous(user):
         filtered_user_ids = [affected_object.owner_id]
     elif not affected_object.has_perm(user, PERM_MANAGE_ASSET):

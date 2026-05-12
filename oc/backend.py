@@ -311,7 +311,17 @@ def token_audience_is_valid(audience):
 
 
 def get_realm_name(request):
-    subdomain = get_subdomain(request)
+    subdomain = get_subdomain(request) if request is not None else ''
+    # When authenticating via Django's `client.login()` the auth backend may be
+    # invoked with `request=None`. In that case we can't derive a subdomain or
+    # call out to external services; fall back to a sensible default realm.
+    if not subdomain:
+        return getattr(
+            settings,
+            'KEYCLOAK_MASTER_REALM',
+            getattr(settings, 'KEYCLOAK_REALM', 'master'),
+        )
+
     realm_name = subdomain
 
     allowed_connections_url = '{}/customer-service/api/allowed-connections'.format(settings.OC_BUILD_URL)
@@ -325,7 +335,12 @@ def get_realm_name(request):
         kpi_logging.error("oc.backend __get_realm {}".format(str(e)), exc_info=True)
 
     if isinstance(allowed_connections_response, requests.Response):
-        realm_name = allowed_connections_response.json()[0]
+        try:
+            data = allowed_connections_response.json()
+        except Exception:
+            data = None
+        if isinstance(data, list) and data:
+            realm_name = data[0]
 
     return realm_name
 

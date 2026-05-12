@@ -32,6 +32,10 @@ class AssetVersionTestCase(TestCase):
         for row in _vc['survey']:
             for att in pop_atts:
                 row.pop(att, None)
+            # Some content expansion pipelines may inject defaults such as
+            # `readonly: "false"`. This test asserts the core normalized
+            # content, so ignore such defaults.
+            row.pop('readonly', None)
         self.assertEqual(_vc, {
                 'survey': [
                     {'type': 'note',

@@ -15,6 +15,10 @@ def get_subdomain_user_ids(user) -> QuerySet:
     """
     from bossoidc2.models import Keycloak as KeycloakModel
 
+    # Anonymous users have no Keycloak identity/subdomain.
+    if is_user_anonymous(user):
+        return KeycloakModel.objects.none().values_list('user_id', flat=True)
+
     kc_user = KeycloakModel.objects.get(user=user)
     return KeycloakModel.objects.filter(
         subdomain=kc_user.subdomain
@@ -28,6 +32,9 @@ def is_owner_in_subdomain(user, owner_id: int) -> bool:
     if `user` has no Keycloak record.
     """
     from bossoidc2.models import Keycloak as KeycloakModel
+
+    if is_user_anonymous(user):
+        return False
 
     kc_user = KeycloakModel.objects.get(user=user)
     return KeycloakModel.objects.filter(

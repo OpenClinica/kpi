@@ -9,6 +9,9 @@ class UserListTests(test_api_users.UserListTests):
 
     URL_NAMESPACE = None
 
+    # v1 uses the same behavior as v2 for authorization responses: depending on
+    # authentication configuration, endpoints may return either 401 or 403.
+
     def test_current_user_extra_details_kludges(self):
         endpoint = reverse(self._get_endpoint('currentuser-detail'))
 

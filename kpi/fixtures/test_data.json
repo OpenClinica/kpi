@@ -76,6 +76,33 @@
         "pk": 3
     },
     {
+        "model": "bossoidc2.keycloak",
+        "pk": "kc-1",
+        "fields": {
+            "user": 1,
+            "subdomain": "admin",
+            "user_type": ""
+        }
+    },
+    {
+        "model": "bossoidc2.keycloak",
+        "pk": "kc-2",
+        "fields": {
+            "user": 2,
+            "subdomain": "someuser",
+            "user_type": ""
+        }
+    },
+    {
+        "model": "bossoidc2.keycloak",
+        "pk": "kc-3",
+        "fields": {
+            "user": 3,
+            "subdomain": "anotheruser",
+            "user_type": ""
+        }
+    },
+    {
         "model": "kpi.asset",
         "pk": 1,
         "parent": 1,
