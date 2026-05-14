@@ -542,6 +542,32 @@ $_lb-accent: #2c6cf0;
   min-width: 0;
 }
 
+// Freestanding-wrapper variant of `.settings__input--with-launcher`: applied
+// to a child div the _isRepeat mixin builds, not to the `.settings__input`
+// container itself, so the wrapper supplies its own top spacing.
+.settings__input--with-launcher--standalone {
+  margin-top: 10px;
+}
+
+// Repeat-count label + standalone input (used by the _isRepeat mixin in
+// view.rowDetail.coffee). In the launcher case the input is reparented into
+// `.settings__input--with-launcher--standalone` and the more-specific rule
+// below flattens its top margin and lets the flex parent control width.
+.settings__repeat-count-label {
+  display: block;
+  margin-top: 10px;
+}
+
+.settings__repeat-count-input {
+  width: 85%;
+  margin-top: 10px;
+}
+
+.settings__input--with-launcher > .settings__repeat-count-input {
+  margin-top: 0;
+  width: auto;
+}
+
 // "Open in Logic Builder" launcher button (P1.1 AC2).
 // Visible glyph is the literal `ƒx` text (matches mockups/phase1.html .logic-launch).
 .card__settings__logic-builder-launcher {

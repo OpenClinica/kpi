@@ -661,25 +661,26 @@ module.exports = do ->
       if (sender.key is 'repeat_count') and (questionId is senderQuestionId)
         @$repeat_count.val(senderValue)
     html: ->
-      @$label_repeat_count = $('<span/>', { style: 'display: block; margin-top: 10px;' }).text(t('Automatic Repeat Count') + ":")
-      @$repeat_count = $('<input/>', { style: 'margin-top: 10px; width:85%;' }).attr('placeholder', t('(leave blank to allow users to add and remove repeats)'))
+      @$label_repeat_count = $('<span class="settings__repeat-count-label"/>').text(t('Automatic Repeat Count') + ":")
+      @$repeat_count = $('<input class="settings__repeat-count-input"/>').attr('placeholder', t('(leave blank to allow users to add and remove repeats)'))
       @$el.addClass("card__settings__fields--active")
       viewRowDetail.Templates.checkbox @cid, @model.key, t("Repeat"), t("Repeat this group if necessary")
     afterRender: ->
-      @$('.settings__input').append(@$label_repeat_count)
+      $settingsInput = @$('.settings__input')
+      $settingsInput.append(@$label_repeat_count)
 
       # The repeat-count text input sits below a checkbox + caption span, so we
       # cannot make the surrounding `.settings__input` a flex row — that would
       # collapse the line breaks. Wrap the input + launcher in their own flex
-      # container instead.
+      # container instead. The `--standalone` modifier supplies the top margin
+      # the input itself carries in the no-launcher case.
       if isLogicTabApplicable(@rowView?.model, 'repeatCount')
-        $launcherRow = $('<div class="settings__input--with-launcher" style="margin-top: 10px;"></div>')
-        @$repeat_count.css('margin-top', '0')
+        $launcherRow = $('<div class="settings__input--with-launcher settings__input--with-launcher--standalone"></div>')
         $launcherRow.append(@$repeat_count)
         $launcherRow.append(logicBuilderLauncherHtml('repeatCount', t('Repeat Count')))
-        @$('.settings__input').append($launcherRow)
+        $settingsInput.append($launcherRow)
       else
-        @$('.settings__input').append(@$repeat_count)
+        $settingsInput.append(@$repeat_count)
 
       @$repeat_count.attr('disabled', true)
 
