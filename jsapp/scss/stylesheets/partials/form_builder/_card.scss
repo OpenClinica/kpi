@@ -352,15 +352,19 @@ $cardIndicatorIconWidth: 21px;
 // `top:` offsets above push the last icons past the group header height,
 // overlapping the first icons of nested rows. Inside group headers, compact
 // the icons so 5 fit without overflow.
-.group__header .card__buttons .card__buttons__button {
-  height: 16px;
-  line-height: 16px;
+// Scoped to gate-on only: when the gate is off the ƒx button is hidden and
+// the original 4-icon layout needs no rebalancing.
+body:not(.is-lb-gate-off) {
+  .group__header .card__buttons .card__buttons__button {
+    height: 16px;
+    line-height: 16px;
 
-  &.card__buttons__button--logic { top: 0; }
-  &.card__buttons__button--delete { top: 2px; }
-  &.card__buttons__button--copy,
-  &.card__buttons__button--clone { top: 4px; }
-  &.card__buttons__button--add { top: 6px; }
+    &.card__buttons__button--logic { top: 0; }
+    &.card__buttons__button--delete { top: 2px; }
+    &.card__buttons__button--copy,
+    &.card__buttons__button--clone { top: 4px; }
+    &.card__buttons__button--add { top: 6px; }
+  }
 }
 
 // overrides

@@ -1,0 +1,48 @@
+// kpi/jsapp/scss/stylesheets/partials/form_builder/_logic_builder_gate.scss
+@use '~kobo-common/src/styles/colors';
+
+//
+// P1.2 AC5 — when the gate is off (default), every piece of Phase 1 Logic
+// Builder UI must be invisible and the Form Designer must render identically
+// to its pre-Logic-Builder baseline. The gate store toggles `is-lb-gate-off`
+// on <body>; the rules below run only while that class is present.
+//
+// P1.2 AC1 / AC3 — visual treatment for the toolbar button and the
+// enabled-state indicator.
+
+// AC5 — hide every Phase-1 entry point while the gate is off.
+body.is-lb-gate-off {
+  .card__buttons__button--logic,
+  .card__settings__logic-builder-launcher {
+    display: none !important;
+  }
+}
+
+// AC1 — toolbar button. Uses the same base shape as bem.FormBuilderHeader__button
+// (provided by the existing form-builder header partial); the override below
+// just distinguishes it from the primary Save Draft button.
+.form-builder-header__button--enable-logic-builder {
+  background: rgba(colors.$kobo-blue, 0.08);
+  color: colors.$kobo-blue;
+  border: 1px solid colors.$kobo-blue;
+  margin-right: 8px;
+
+  &:hover {
+    background: rgba(colors.$kobo-blue, 0.16);
+  }
+}
+
+// AC3 — quiet enabled-state indicator.
+.logic-builder-gate__indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 8px;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: colors.$kobo-green;
+  background: #e8f5ed;
+  border: 1px solid #b7dec5;
+}

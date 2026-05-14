@@ -50,6 +50,8 @@ import {
 } from 'js/components/formBuilder/formBuilderUtils';
 import envStore from 'js/envStore';
 import { usePrompt } from 'js/router/promptBlocker';
+import EnableLogicBuilderToggle from 'js/components/formBuilder/EnableLogicBuilderToggle';
+import logicBuilderGateStore from 'js/stores/logicBuilderGateStore';
 
 const ErrorMessage = makeBem(null, 'error-message');
 const ErrorMessage__strong = makeBem(null, 'error-message__header', 'strong');
@@ -122,6 +124,7 @@ export default assign({
     }
     sessionStorage.removeItem(FORM_STYLE_CACHE_NAME);
     this.unpreventClosingTab();
+    logicBuilderGateStore.reset();
   },
 
   routerWillLeave() {
@@ -789,6 +792,8 @@ export default assign({
                 {backButtonText}
               </bem.FormBuilderHeader__button>
             }
+
+            <EnableLogicBuilderToggle />
 
             <bem.FormBuilderHeader__button
               m={['save', {

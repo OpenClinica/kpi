@@ -11,6 +11,7 @@ import {
   type ExpressionData,
   type GroupKind,
 } from '@openclinica/logic-builder';
+import logicBuilderGateStore from 'js/stores/logicBuilderGateStore';
 
 const PANEL_HOST_ID = 'oc-logic-builder-host';
 
@@ -88,6 +89,7 @@ class LogicBuilderErrorBoundary extends React.Component<BoundaryProps, {hasError
 }
 
 export function openLogicBuilder(opts: OpenOptions): void {
+  if (!logicBuilderGateStore.isEnabled) return;
   closeLogicBuilder();
 
   const data = readRow(opts.row);
