@@ -1,6 +1,11 @@
 @use 'scss/breakpoints';
 @use '~kobo-common/src/styles/colors';
 
+// Logic Builder accent — same hue used for the item-tile ƒx button in
+// `_card.scss`. Mockup-specified (phase1.html:541); kept distinct from
+// `colors.$kobo-blue` which is a cyan-shifted shade.
+$_lb-accent: #2c6cf0;
+
 // ==========================================================================
 // Card settings tabs
 // ==========================================================================
@@ -516,4 +521,86 @@
         background: inherit;
         border-left: 0px;
     }
+}
+
+// Place the input + launcher on the same row, side by side.
+// Two cases:
+//   1. The class is on the existing .settings__input span (default / calculation
+//      mixins). Specificity bump beats the inherited `display: inline-block`.
+//   2. The class is on a freestanding wrapper div around just the input +
+//      launcher (the _isRepeat mixin uses this so the surrounding checkbox +
+//      "Automatic Repeat Count:" caption keep their own line breaks).
+.settings__input--with-launcher,
+.card__settings__fields__field .settings__input.settings__input--with-launcher {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+// `> input[type="text"]` doesn't match inputs created via `$('<input/>')`
+// without an explicit type attribute (HTML defaults to text but the attribute
+// selector requires the attribute to be present). `:not([type])` covers that.
+.settings__input--with-launcher > textarea,
+.settings__input--with-launcher > input[type="text"],
+.settings__input--with-launcher > input:not([type]) {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+// Freestanding-wrapper variant of `.settings__input--with-launcher`: applied
+// to a child div the _isRepeat mixin builds, not to the `.settings__input`
+// container itself, so the wrapper supplies its own top spacing.
+.settings__input--with-launcher--standalone {
+  margin-top: 10px;
+}
+
+// Repeat-count label + standalone input (used by the _isRepeat mixin in
+// view.rowDetail.coffee). In the launcher case the input is reparented into
+// `.settings__input--with-launcher--standalone` and the more-specific rule
+// below flattens its top margin and lets the flex parent control width.
+.settings__repeat-count-label {
+  display: block;
+  margin-top: 10px;
+}
+
+.settings__repeat-count-input {
+  width: 85%;
+  margin-top: 10px;
+}
+
+.settings__input--with-launcher > .settings__repeat-count-input {
+  margin-top: 0;
+  width: auto;
+}
+
+// "Open in Logic Builder" launcher button (P1.1 AC2).
+// Visible glyph is the literal `ƒx` text (matches mockups/phase1.html .logic-launch).
+.card__settings__logic-builder-launcher {
+  flex: 0 0 28px;
+  width: 28px;
+  align-self: stretch;
+  min-height: 28px;
+  border: 1px solid colors.$kobo-gray-85;
+  border-radius: 3px;
+  background: colors.$kobo-white;
+  color: $_lb-accent;
+  font-family: serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: colors.$kobo-light-blue;
+    border-color: $_lb-accent;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $_lb-accent;
+    outline-offset: 1px;
+  }
 }

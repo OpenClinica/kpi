@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@fontsource/roboto": "^4.4.2",
+    "@openclinica/logic-builder": "github:OpenClinica/logic-builder#ea77c653bbaff233a24489b1d66e5947c2eb8b44",
     "@fontsource/roboto-mono": "^4.4.2",
     "@mapbox/leaflet-omnivore": "^0.3.4",
     "alertifyjs": "^1.13.1",
