@@ -12,6 +12,7 @@ require('./xlform/deserializer.tests');
 require('./xlform/group.tests');
 require('./xlform/icons.tests');
 require('./xlform/inputParser.tests');
+require('./xlform/logicBuilderRow.tests');
 require('./xlform/questionTypeForms.tests');
 require('./xlform/rowDetail.tests');
 require('./xlform/rowSelector.tests');

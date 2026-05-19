@@ -10,6 +10,26 @@ ResizeSensor = require 'css-element-queries/src/ResizeSensor'
 $viewRowDetailSkipLogic = require './view.rowDetail.SkipLogic'
 $viewTemplates = require './view.templates'
 
+{applicableTabsFor} = require '@openclinica/logic-builder'
+{getItemType, getGroupKind} = require('js/formbuild/logicBuilderRow')
+
+# HTML for a small "Open in Logic Builder" launcher button.
+# Visible glyph is the `ƒx` text per mockups/phase1.html (logic-launch class).
+# The bridge handler reads `data-logic-tab` to pre-select the panel tab.
+logicBuilderLauncherHtml = (tab, label) ->
+  """
+  <button type="button"
+          class="card__settings__logic-builder-launcher js-open-logic-builder"
+          data-logic-tab="#{tab}"
+          aria-label="#{t('Open in Logic Builder')}: #{label}"
+          title="#{t('Open in Logic Builder')}: #{label}">ƒx</button>
+  """
+
+# Whether a given Logic Builder tab applies to a row, given its Backbone model.
+isLogicTabApplicable = (row, tab) ->
+  return false unless row
+  tab in applicableTabsFor(getItemType(row), getGroupKind(row))
+
 module.exports = do ->
   viewRowDetail = {}
 
@@ -440,6 +460,9 @@ module.exports = do ->
 
       @model.facade.render @target_element
 
+      if isLogicTabApplicable(@rowView?.model, 'relevant')
+        @$el.find('.relevant__editor').append(logicBuilderLauncherHtml('relevant', t('Relevant')))
+
     insertInDOM: (rowView) ->
       @_insertInDOM rowView.cardSettingsWrap.find('.js-card-settings-skip-logic').eq(0)
 
@@ -460,6 +483,9 @@ module.exports = do ->
       @target_element = @$('.skiplogic__main')
 
       @model.facade.render @target_element
+
+      if isLogicTabApplicable(@rowView?.model, 'constraint')
+        @$el.find('.constraint__editor').append(logicBuilderLauncherHtml('constraint', t('Constraint')))
 
     insertInDOM: (rowView) ->
       @_insertInDOM rowView.cardSettingsWrap.find('.js-card-settings-validation-criteria')
@@ -633,6 +659,10 @@ module.exports = do ->
           evt.preventDefault()
           $textarea.blur()
 
+      if @model.key is 'default' and isLogicTabApplicable(@rowView?.model, 'default')
+        @$('.settings__input').addClass('settings__input--with-launcher')
+                              .append(logicBuilderLauncherHtml('default', t('Default')))
+
   viewRowDetail.DetailViewMixins._isRepeat =
     onOcCustomEvent: (ocCustomEventArgs) ->
       questionId = @model._parent.cid
@@ -642,13 +672,27 @@ module.exports = do ->
       if (sender.key is 'repeat_count') and (questionId is senderQuestionId)
         @$repeat_count.val(senderValue)
     html: ->
-      @$label_repeat_count = $('<span/>', { style: 'display: block; margin-top: 10px;' }).text(t('Automatic Repeat Count') + ":")
-      @$repeat_count = $('<input/>', { style: 'margin-top: 10px; width:85%;' }).attr('placeholder', t('(leave blank to allow users to add and remove repeats)'))
+      @$label_repeat_count = $('<span class="settings__repeat-count-label"/>').text(t('Automatic Repeat Count') + ":")
+      @$repeat_count = $('<input class="settings__repeat-count-input"/>').attr('placeholder', t('(leave blank to allow users to add and remove repeats)'))
       @$el.addClass("card__settings__fields--active")
       viewRowDetail.Templates.checkbox @cid, @model.key, t("Repeat"), t("Repeat this group if necessary")
     afterRender: ->
-      @$('.settings__input').append(@$label_repeat_count)
-      @$('.settings__input').append(@$repeat_count)
+      $settingsInput = @$('.settings__input')
+      $settingsInput.append(@$label_repeat_count)
+
+      # The repeat-count text input sits below a checkbox + caption span, so we
+      # cannot make the surrounding `.settings__input` a flex row — that would
+      # collapse the line breaks. Wrap the input + launcher in their own flex
+      # container instead. The `--standalone` modifier supplies the top margin
+      # the input itself carries in the no-launcher case.
+      if isLogicTabApplicable(@rowView?.model, 'repeatCount')
+        $launcherRow = $('<div class="settings__input--with-launcher settings__input--with-launcher--standalone"></div>')
+        $launcherRow.append(@$repeat_count)
+        $launcherRow.append(logicBuilderLauncherHtml('repeatCount', t('Repeat Count')))
+        $settingsInput.append($launcherRow)
+      else
+        $settingsInput.append(@$repeat_count)
+
       @$repeat_count.attr('disabled', true)
 
       if @model.getValue()?
@@ -1440,6 +1484,10 @@ module.exports = do ->
         if evt.key is 'Enter' or evt.keyCode is 13
           evt.preventDefault()
           $textarea.blur()
+
+      if isLogicTabApplicable(@rowView?.model, 'calculation')
+        @$('.settings__input').addClass('settings__input--with-launcher')
+                              .append(logicBuilderLauncherHtml('calculation', t('Calculation')))
 
   viewRowDetail.DetailViewMixins.select_one_from_file_filename =
     html: ->
