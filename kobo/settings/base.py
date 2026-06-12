@@ -2339,10 +2339,11 @@ SOCIALACCOUNT_PROVIDERS = {
                 'client_id': KEYCLOAK_CLIENT_ID,
                 'secret': KEYCLOAK_CLIENT_SECRET,
                 'settings': {
-                    'server_url': f'{KEYCLOAK_AUTH_URI}/auth/realms/{KEYCLOAK_DEFAULT_REALM}',
+                    'server_url': (
+                        f'{KEYCLOAK_AUTH_URI}/auth/realms/{KEYCLOAK_DEFAULT_REALM}'
+                    ),
                 },
             }
         ],
     }
 }
-
