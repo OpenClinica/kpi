@@ -189,7 +189,7 @@ export default class AssetsTable extends React.Component<AssetsTableProps, Asset
         displayLabel = t('Questions')
       }
       return (
-        <bem.AssetsTableRow__column m={columnDef.id} className="header" disabled>
+        <bem.AssetsTableRow__column m={columnDef.id} className='header' disabled>
           {displayLabel}
         </bem.AssetsTableRow__column>
       )

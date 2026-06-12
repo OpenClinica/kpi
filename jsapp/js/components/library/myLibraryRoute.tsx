@@ -189,7 +189,9 @@ export default class MyLibraryRoute extends React.Component<{}, MyLibraryRouteSt
           </bem.LibraryActions>
 
           <bem.Breadcrumbs m='gray-wrapper'>
-            <bem.Breadcrumbs__crumb href={ROOT_BREADCRUMBS.MY_LIBRARY.href}>{ROOT_BREADCRUMBS.MY_LIBRARY.label}</bem.Breadcrumbs__crumb>
+            <bem.Breadcrumbs__crumb href={ROOT_BREADCRUMBS.MY_LIBRARY.href}>
+              {ROOT_BREADCRUMBS.MY_LIBRARY.label}
+            </bem.Breadcrumbs__crumb>
             {myLibraryStore.getCollectionUid() && (
               <React.Fragment>
                 <i className='k-icon k-icon-angle-right' />

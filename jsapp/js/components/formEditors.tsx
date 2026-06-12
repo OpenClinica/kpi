@@ -1,7 +1,7 @@
 import React from 'react'
+import { ASSET_TYPES, type AssetTypeName } from '#/constants'
 import { type WithRouterProps, withRouter } from '#/router/legacy'
 import { ROUTES } from '#/router/routerConstants'
-import { ASSET_TYPES, type AssetTypeName } from '#/constants'
 import EditableForm from '../editorMixins/EditableForm'
 
 /**

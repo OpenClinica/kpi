@@ -1,47 +1,47 @@
-import Reflux from 'reflux';
+import Reflux from 'reflux'
 
-import {getLibraryFilterCacheName} from 'js/ocutils';
+import { getLibraryFilterCacheName } from 'js/ocutils'
 
-const DEFAULT_FILTER = {value: 'all', label: t('Show All')};
+const DEFAULT_FILTER = { value: 'all', label: t('Show All') }
 
 interface LibraryTypeFilterStoreData {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  filterType: any;
+  filterType: any
 }
 
 class LibraryTypeFilterStore extends Reflux.Store {
   data: LibraryTypeFilterStoreData = {
     filterType: DEFAULT_FILTER,
-  };
+  }
 
   init() {
-    this.resetFilter();
+    this.resetFilter()
   }
 
   getFilterType() {
-    return this.data.filterType;
+    return this.data.filterType
   }
 
   setFilterType(newVal: string) {
     if (this.data.filterType !== newVal) {
-      this.data.filterType = newVal;
-      sessionStorage.setItem(getLibraryFilterCacheName(), JSON.stringify(this.data.filterType));
-      this.trigger(this.data);
+      this.data.filterType = newVal
+      sessionStorage.setItem(getLibraryFilterCacheName(), JSON.stringify(this.data.filterType))
+      this.trigger(this.data)
     }
   }
 
   resetFilter() {
-    const filterType = sessionStorage.getItem(getLibraryFilterCacheName());
+    const filterType = sessionStorage.getItem(getLibraryFilterCacheName())
     if (filterType) {
-      this.data.filterType = JSON.parse(filterType);
+      this.data.filterType = JSON.parse(filterType)
     } else {
-      this.data.filterType = DEFAULT_FILTER;
+      this.data.filterType = DEFAULT_FILTER
     }
-    this.trigger(this.data);
+    this.trigger(this.data)
   }
 }
 
-const libraryTypeFilterStore = new LibraryTypeFilterStore();
-libraryTypeFilterStore.init();
+const libraryTypeFilterStore = new LibraryTypeFilterStore()
+libraryTypeFilterStore.init()
 
-export default libraryTypeFilterStore;
+export default libraryTypeFilterStore

@@ -125,13 +125,13 @@ export function userCanPartially(permName: PermissionCodename, asset?: AssetResp
 }
 
 /**
-   * @param {Object} asset
-   */
+ * @param {Object} asset
+ */
 export function userWithSameSubdomainAsAssetOwner(asset: AssetResponse) {
-  const currentUserSubdomain = sessionStore.currentAccount.subdomain;
-  const ownerUserSubdomain = asset.owner__subdomain;
+  const currentUserSubdomain = sessionStore.currentAccount.subdomain
+  const ownerUserSubdomain = asset.owner__subdomain
 
-  return currentUserSubdomain === ownerUserSubdomain;
+  return currentUserSubdomain === ownerUserSubdomain
 }
 
 /**

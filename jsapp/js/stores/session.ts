@@ -12,9 +12,7 @@ import { ANON_USERNAME } from '#/users/utils'
 import { currentLang, log } from '#/utils'
 
 class SessionStore {
-  currentAccount:
-    | AccountResponse
-    | { username: string; date_joined: string; user_type: string; subdomain: string } = {
+  currentAccount: AccountResponse | { username: string; date_joined: string; user_type: string; subdomain: string } = {
     username: ANON_USERNAME,
     date_joined: '',
     user_type: ANON_USER_TYPE,

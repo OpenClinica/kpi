@@ -125,7 +125,7 @@ export function nullifyTranslations(
 
   if (data.translations.length > 1 && data.translations.indexOf(null) !== -1) {
     throw new Error(
-      'This form includes columns with languages defined but there are also one or more columns that don\'t include a language name.\nIf translations are used in your form, every user-facing text and media content column must include a language name as part of its column title.\nPlease revise your form definition spreadsheet, upload it, and open it in Form Designer again.',
+      "This form includes columns with languages defined but there are also one or more columns that don't include a language name.\nIf translations are used in your form, every user-facing text and media content column must include a language name as part of its column title.\nPlease revise your form definition spreadsheet, upload it, and open it in Form Designer again.",
     )
   }
 

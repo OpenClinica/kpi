@@ -4,7 +4,6 @@ import { Navigate, Route, createHashRouter, createRoutesFromElements } from 'rea
 import accountRoutes from '#/account/routes'
 import App from '#/app'
 import { FormPage, LibraryAssetEditor } from '#/components/formEditors'
-import AssetRoute from '#/components/library/assetRoute'
 import MyLibraryRoute from '#/components/library/myLibraryRoute'
 import PublicCollectionsRoute from '#/components/library/publicCollectionsRoute'
 import { PERMISSIONS_CODENAMES } from '#/components/permissions/permConstants'
@@ -74,10 +73,7 @@ export const router = createHashRouter(
             />
           }
         />
-        <Route
-          path={ROUTES.LIBRARY_ITEM}
-          element={<Navigate to={ROUTES.LIBRARY} replace />}
-        />
+        <Route path={ROUTES.LIBRARY_ITEM} element={<Navigate to={ROUTES.LIBRARY} replace />} />
         <Route
           path={ROUTES.EDIT_LIBRARY_ITEM}
           element={

@@ -50,9 +50,9 @@ import {
   update_states,
 } from '#/constants'
 import envStore from '#/envStore'
-import sessionStore from '#/stores/session'
 import type { RouterProp } from '#/router/legacy'
 import { ROUTES } from '#/router/routerConstants'
+import sessionStore from '#/stores/session'
 import dkobo_xlform from '../../xlform/src/_xlform.init'
 import type { Survey } from '../../xlform/src/model.survey'
 import type { SurveyDetail } from '../../xlform/src/model.surveyDetail'
@@ -1084,10 +1084,14 @@ export default function EditableForm(props: EditableFormProps) {
             {canAddToLibrary() && (
               <span
                 className='button-container left-tooltip'
-                data-tip={groupable ? t('Add selected questions to library') : t('Add selected questions to library disabled. Please select at least one question.')}
+                data-tip={
+                  groupable
+                    ? t('Add selected questions to library')
+                    : t('Add selected questions to library disabled. Please select at least one question.')
+                }
               >
                 <bem.FormBuilderHeader__button
-                  m={['group', {groupable: groupable}]}
+                  m={['group', { groupable: groupable }]}
                   onClick={addQuestionsToLibrary}
                   disabled={!groupable}
                   className='add-questions-to-library'

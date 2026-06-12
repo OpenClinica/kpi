@@ -13,6 +13,7 @@ import KoboTagsInput from '#/components/common/koboTagsInput'
 import LoadingSpinner from '#/components/common/loadingSpinner'
 import TextBox from '#/components/common/textBox'
 import WrappedSelect from '#/components/common/wrappedSelect'
+import { navigatePreservingEConsent } from '#/components/formBuilder/econsentSignature'
 import managedCollectionsStore from '#/components/library/managedCollectionsStore'
 import { ASSET_TYPES, MODAL_TYPES } from '#/constants'
 import envStore from '#/envStore'
@@ -21,7 +22,6 @@ import pageState from '#/pageState.store'
 import { withRouter } from '#/router/legacy'
 import sessionStore from '#/stores/session'
 import { notify } from '#/utils'
-import { navigatePreservingEConsent } from '#/components/formBuilder/econsentSignature'
 import { renderBackButton } from './modalHelpers'
 import './libraryAssetForm.scss'
 
@@ -190,7 +190,9 @@ export class LibraryAssetFormComponent extends React.Component {
   getNameTitle() {
     let nameTitle = t('Please enter the name of your new Collection.')
     if (this.props.formType === MODAL_TYPES.LIBRARY_COLLECTION_CREATE) {
-      nameTitle = t('Please enter the name of your new Collection. Collections can help you better organize your library.')
+      nameTitle = t(
+        'Please enter the name of your new Collection. Collections can help you better organize your library.',
+      )
     }
     return nameTitle
   }

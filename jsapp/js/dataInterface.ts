@@ -1198,35 +1198,39 @@ export const dataInterface: DataInterface = {
   },
 
   keycloakLogout: (): JQuery.Promise<any> => {
-    const d = $.Deferred();
-    $ajax({ url: `${ROOT_URL}/openid/logout`}).done(d.resolve).fail(function (_resp: {status: number;}, _etype: unknown, _emessage: unknown) {
-      // if (resp.status === 200) {
-      //   d.resolve();
-      // } else {
-      //   d.fail('keycloak logout failed');
-      // }
-      d.resolve();
-    });
-    return d.promise();
+    const d = $.Deferred()
+    $ajax({ url: `${ROOT_URL}/openid/logout` })
+      .done(d.resolve)
+      .fail((_resp: { status: number }, _etype: unknown, _emessage: unknown) => {
+        // if (resp.status === 200) {
+        //   d.resolve();
+        // } else {
+        //   d.fail('keycloak logout failed');
+        // }
+        d.resolve()
+      })
+    return d.promise()
   },
 
   checkKeycloakStatus: (): JQuery.Promise<any> => {
-    var d = $.Deferred();
-    $ajax({ url: `${ROOT_URL}` }).done(function(resp: any) {
-      console.log('checkKeycloakStatus resp', resp);
-      d.resolve();
-    }).fail(function (resp: { status: number; }, etype: any, emessage: any) {
-      console.log('checkKeycloakStatus resp', resp);
-      console.log('checkKeycloakStatus etype', etype);
-      console.log('checkKeycloakStatus emessage', emessage);
-      // if (resp.status === 200) {
-      //   d.resolve();
-      // } else {
-      //   d.fail('checkKeycloakStatus failed');
-      // }
-      d.resolve();
-    });
-    return d.promise();
+    var d = $.Deferred()
+    $ajax({ url: `${ROOT_URL}` })
+      .done((resp: any) => {
+        console.log('checkKeycloakStatus resp', resp)
+        d.resolve()
+      })
+      .fail((resp: { status: number }, etype: any, emessage: any) => {
+        console.log('checkKeycloakStatus resp', resp)
+        console.log('checkKeycloakStatus etype', etype)
+        console.log('checkKeycloakStatus emessage', emessage)
+        // if (resp.status === 200) {
+        //   d.resolve();
+        // } else {
+        //   d.fail('checkKeycloakStatus failed');
+        // }
+        d.resolve()
+      })
+    return d.promise()
   },
 
   patchProfile(data: AccountRequest): JQuery.jqXHR<AccountResponse> {

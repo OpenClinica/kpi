@@ -417,9 +417,7 @@ class AssetActionButtons extends React.Component<AssetActionButtonsProps, AssetA
     const userCanEdit = true
     const hasDetailsEditable = assetType === ASSET_TYPES.template.id || assetType === ASSET_TYPES.collection.id
     const isCollection = assetType === ASSET_TYPES.collection.id
-    const downloads = !isCollection
-      ? this.props.asset.downloads.filter((dl) => dl.format !== 'xml')
-      : []
+    const downloads = isCollection ? [] : this.props.asset.downloads.filter((dl) => dl.format !== 'xml')
 
     return (
       <menu className='asset-action-buttons'>
@@ -489,31 +487,32 @@ class AssetActionButtons extends React.Component<AssetActionButtonsProps, AssetA
               </bem.PopoverMenu__link>
             )}
 
-            {assetType !== ASSET_TYPES.survey.id && this.state.ownedCollections.length > 0 && [
-              <bem.PopoverMenu__heading key='heading'>{t('Move to')}</bem.PopoverMenu__heading>,
-              <bem.PopoverMenu__moveTo key='list'>
-                {this.state.ownedCollections.map((collection) => {
-                  const modifiers = ['move-coll-item']
-                  const isAssetParent = collection.url === this.props.asset.parent
-                  if (isAssetParent) {
-                    modifiers.push('move-coll-item-parent')
-                  }
-                  const displayName = assetUtils.getAssetDisplayName(collection).final
-                  return (
-                    <bem.PopoverMenu__item
-                      onClick={this.moveToCollection.bind(this, collection.url)}
-                      key={collection.uid}
-                      title={displayName}
-                      m={modifiers}
-                    >
-                      {isAssetParent && <i className='k-icon k-icon-check' />}
-                      {!isAssetParent && <i className='k-icon k-icon-folder-in' />}
-                      {displayName}
-                    </bem.PopoverMenu__item>
-                  )
-                })}
-              </bem.PopoverMenu__moveTo>,
-            ]}
+            {assetType !== ASSET_TYPES.survey.id &&
+              this.state.ownedCollections.length > 0 && [
+                <bem.PopoverMenu__heading key='heading'>{t('Move to')}</bem.PopoverMenu__heading>,
+                <bem.PopoverMenu__moveTo key='list'>
+                  {this.state.ownedCollections.map((collection) => {
+                    const modifiers = ['move-coll-item']
+                    const isAssetParent = collection.url === this.props.asset.parent
+                    if (isAssetParent) {
+                      modifiers.push('move-coll-item-parent')
+                    }
+                    const displayName = assetUtils.getAssetDisplayName(collection).final
+                    return (
+                      <bem.PopoverMenu__item
+                        onClick={this.moveToCollection.bind(this, collection.url)}
+                        key={collection.uid}
+                        title={displayName}
+                        m={modifiers}
+                      >
+                        {isAssetParent && <i className='k-icon k-icon-check' />}
+                        {!isAssetParent && <i className='k-icon k-icon-folder-in' />}
+                        {displayName}
+                      </bem.PopoverMenu__item>
+                    )
+                  })}
+                </bem.PopoverMenu__moveTo>,
+              ]}
           </PopoverMenu>
         )}
 
