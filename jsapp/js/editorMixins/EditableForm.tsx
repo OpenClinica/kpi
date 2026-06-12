@@ -1091,7 +1091,7 @@ export default function EditableForm(props: EditableFormProps) {
                 }
               >
                 <bem.FormBuilderHeader__button
-                  m={['group', { groupable: groupable }]}
+                  m={['group', { groupable: !!groupable }]}
                   onClick={addQuestionsToLibrary}
                   disabled={!groupable}
                   className='add-questions-to-library'
