@@ -3,7 +3,12 @@ import json
 
 from django.contrib import auth
 from django.conf import settings
-from django.http import HttpResponseRedirect, HttpResponseNotAllowed, JsonResponse, HttpResponseNotFound
+from django.http import (
+    HttpResponseRedirect,
+    HttpResponseNotAllowed,
+    JsonResponse,
+    HttpResponseNotFound,
+)
 from django.urls import reverse
 from django.utils.module_loading import import_string
 from django.views.generic import View
@@ -17,7 +22,7 @@ class OCAuthenticationCallbackView(View):
     Keycloak's Valid Redirect URIs must be updated to that URL.
     Until then, this view redirects to the allauth login initiation.
     """
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     def get(self, request):
         return HttpResponseRedirect(
@@ -27,7 +32,7 @@ class OCAuthenticationCallbackView(View):
 
 class OCAuthenticationRequestView(View):
     """Initiates OIDC authentication via allauth's OpenID Connect provider."""
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     def get(self, request):
         login_url = reverse('openid_connect_login', kwargs={'provider_id': 'keycloak'})
@@ -39,17 +44,17 @@ class OCAuthenticationRequestView(View):
 
 class OCLogoutView(View):
     """Logout helper view"""
-    http_method_names = ["get", "post"]
+    http_method_names = ['get', 'post']
 
     @property
     def redirect_url(self):
-        return getattr(settings, "LOGOUT_REDIRECT_URL", "/")
+        return getattr(settings, 'LOGOUT_REDIRECT_URL', '/')
 
     def post(self, request):
         logout_url = self.redirect_url
 
         if request.user.is_authenticated:
-            logout_from_op = getattr(settings, "OIDC_OP_LOGOUT_URL_METHOD", "")
+            logout_from_op = getattr(settings, 'OIDC_OP_LOGOUT_URL_METHOD', '')
             if logout_from_op:
                 logout_url = import_string(logout_from_op)(request)
             auth.logout(request)
@@ -57,30 +62,30 @@ class OCLogoutView(View):
         return HttpResponseRedirect(logout_url)
 
     def get(self, request):
-        if getattr(settings, "ALLOW_LOGOUT_GET_METHOD", False):
+        if getattr(settings, 'ALLOW_LOGOUT_GET_METHOD', False):
             return self.post(request)
-        return HttpResponseNotAllowed(["POST"])
+        return HttpResponseNotAllowed(['POST'])
 
 
 class OCAppInfoView(View):
 
-    http_method_names = ["get"]
+    http_method_names = ['get']
 
     @csrf_exempt
     def get(self, request):
         package_info = {}
         try:
             config_file = os.path.join(settings.BASE_DIR, 'package.json')
-            with open(config_file, "r") as f:
+            with open(config_file, 'r') as f:
                 package_info = json.loads(f.read())
         except IOError:
             return HttpResponseNotFound()
 
         kpi_data = {
-            "name": package_info["name"],
-            "description": package_info["description"],
-            "version": package_info["version"],
-            "status": "passing"
+            'name': package_info['name'],
+            'description': package_info['description'],
+            'version': package_info['version'],
+            'status': 'passing',
         }
 
         return JsonResponse([kpi_data], safe=False)

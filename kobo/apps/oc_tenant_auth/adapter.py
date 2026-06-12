@@ -3,20 +3,20 @@ import json
 import logging
 
 import requests
-from django.conf import settings
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-
-
-def _decode_jwt_payload(token):
-    part = token.split('.')[1]
-    part += '=' * (-len(part) % 4)
-    return json.loads(base64.urlsafe_b64decode(part))
+from django.conf import settings
 
 from .backend import get_realm_name, get_client_secret
 from .models import KeycloakTenantUser
 from .utils import get_subdomain
 
 LOGGER = logging.getLogger(__name__)
+
+
+def _decode_jwt_payload(token):
+    part = token.split('.')[1]
+    part += '=' * (-len(part) % 4)
+    return json.loads(base64.urlsafe_b64decode(part))
 
 
 class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -81,10 +81,10 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
             except get_user_model().DoesNotExist:
                 pass
 
-
     def save_user(self, request, sociallogin, form=None):
         """
-        After user save: sync roles, populate OC session values, upsert KeycloakTenantUser.
+        After user save: sync roles, populate OC session values,
+        upsert KeycloakTenantUser.
         """
         user = super().save_user(request, sociallogin, form)
         subdomain = get_subdomain(request)
@@ -131,7 +131,7 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         )
 
     def _clear_existing_email_addresses(self, user, sociallogin):
-        """Remove email addresses that already exist so allauth doesn't re-insert them."""
+        """Remove email addresses already on the account so allauth won't re-insert."""
         from allauth.account.models import EmailAddress
         existing = set(
             EmailAddress.objects.filter(user=user).values_list('email', flat=True)
@@ -157,7 +157,7 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         request.session['oc_user_uuid'] = user_uuid
 
     def _store_customer_info(self, request, access_token):
-        """Store oc_customer_name and oc_customer_shared_infra from Customer Service API."""
+        """Store oc_customer_name and oc_customer_shared_infra from Customer API."""
         try:
             payload = _decode_jwt_payload(access_token)
             customer_uuid = payload.get(
@@ -169,7 +169,9 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         if not customer_uuid:
             LOGGER.error('Empty customerUuid received from access_token')
             return
-        customer_url = f'{settings.OC_BUILD_URL}/customer-service/api/customers/{customer_uuid}'
+        customer_url = (
+            f'{settings.OC_BUILD_URL}/customer-service/api/customers/{customer_uuid}'
+        )
         headers = {'Authorization': f'Bearer {access_token}'}
         try:
             response = requests.get(customer_url, headers=headers, timeout=10)

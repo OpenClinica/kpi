@@ -22,7 +22,9 @@ class Migration(migrations.Migration):
                 migrations.CreateModel(
                     name='KeycloakTenantUser',
                     fields=[
-                        ('UID', models.CharField(max_length=37, primary_key=True, serialize=False)),
+                        ('UID', models.CharField(
+                            max_length=37, primary_key=True, serialize=False
+                        )),
                         ('subdomain', models.CharField(default='', max_length=64)),
                         ('user_type', models.CharField(default='', max_length=64)),
                         ('user', models.OneToOneField(
@@ -44,7 +46,8 @@ class Migration(migrations.Migration):
                             "subdomain" varchar(64) NOT NULL DEFAULT '',
                             "user_type" varchar(64) NOT NULL DEFAULT '',
                             "user_id" integer NOT NULL UNIQUE
-                                REFERENCES "auth_user" ("id") DEFERRABLE INITIALLY DEFERRED
+                                REFERENCES "auth_user" ("id")
+                                    DEFERRABLE INITIALLY DEFERRED
                         );
                     """,
                     reverse_sql='DROP TABLE IF EXISTS "bossoidc_keycloak";',

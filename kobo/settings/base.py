@@ -2316,8 +2316,8 @@ OC_BUILD_URL = os.environ.get('OC_BUILD_URL', '')
 
 OIDC_RP_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'formdesigner')
 OIDC_RP_SCOPES = 'openid profile email'
-OIDC_RP_SIGN_ALGO = "RS256"
-OIDC_CALLBACK_CLASS = "kobo.apps.oc_tenant_auth.views.OCAuthenticationCallbackView"
+OIDC_RP_SIGN_ALGO = 'RS256'
+OIDC_CALLBACK_CLASS = 'kobo.apps.oc_tenant_auth.views.OCAuthenticationCallbackView'
 ALLOW_LOGOUT_GET_METHOD = True
 
 PUBLIC_URI_FOR_KEYCLOAK = os.environ.get('PUBLIC_URI', 'http://cust2.kobo.local')
@@ -2329,7 +2329,9 @@ KEYCLOAK_CLIENT_SECRET = os.environ.get('KEYCLOAK_CLIENT_SECRET', 'client-secret
 KEYCLOAK_ADMIN_CLIENT_ID = os.environ.get('KEYCLOAK_ADMIN_CLIENT_ID', 'admin-cli')
 KEYCLOAK_ADMIN_CLIENT_SECRET = os.environ.get('KEYCLOAK_ADMIN_CLIENT_SECRET', 'admin-client-secret')
 
-SOCIALACCOUNT_ADAPTER = 'kobo.apps.oc_tenant_auth.adapter.TenantAwareSocialAccountAdapter'
+SOCIALACCOUNT_ADAPTER = (
+    'kobo.apps.oc_tenant_auth.adapter.TenantAwareSocialAccountAdapter'
+)
 SOCIALACCOUNT_PROVIDERS = {
     'openid_connect': {
         'APPS': [
