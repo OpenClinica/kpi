@@ -110,7 +110,6 @@ CORS_ORIGIN_REGEX_WHITELIST = [
     rf'^(https?://)?([A-Za-z0-9-]+\.){{1,4}}{re.escape(domain.lstrip("."))}$'
     for domain in CORS_ALLOWED_DOMAINS
 ]
-
 CORS_ALLOW_CREDENTIALS = True
 # Limit sessions to 1 week (the default is 2 weeks)
 SESSION_COOKIE_AGE = env.int('DJANGO_SESSION_COOKIE_AGE', 604800)
@@ -222,6 +221,7 @@ MIDDLEWARE = [
     # 'oc.middleware.csrf.OCCsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'kobo.apps.oc_tenant_auth.middleware.SDUserSwitchMiddleware',
     'kobo.apps.openrosa.libs.utils.middleware.RestrictedAccessMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'kobo.apps.openrosa.libs.utils.middleware.HTTPResponseNotAllowedMiddleware',
@@ -1710,6 +1710,7 @@ ACCOUNT_SESSION_REMEMBER = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = env.str('SOCIALACCOUNT_EMAIL_VERIFICATION', 'none')
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_LOGIN_ON_GET = True
+SOCIALACCOUNT_STORE_TOKENS = True
 SOCIALACCOUNT_FORMS = {
     'signup': 'kobo.apps.accounts.forms.SocialSignupForm',
 }
