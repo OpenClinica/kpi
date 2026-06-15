@@ -167,17 +167,13 @@ def get_user_with_id(access_token, userinfo, subdomain=None):
     except KeycloakModel.DoesNotExist:  # no keycloak UID + subdomain match
         try:
             user = UserModel.objects.get_by_natural_key(username)
-
-            # remove existing user account, so permissions are not transfered
-            # DP NOTE: required, as the username field is still a unique field,
-            #          which doesn't allow multiple users in the table with the
-            #          same username
-            user.delete()
+            # UID changed in Keycloak — replace only the KeycloakModel entry
+            # so the user retains their library entries and other KPI data.
+            KeycloakModel.objects.filter(user=user).delete()
         except UserModel.DoesNotExist:
-            pass
+            args = {UserModel.USERNAME_FIELD: username, 'defaults': openid_data}
+            user, _ = UserModel.objects.update_or_create(**args)
 
-        args = {UserModel.USERNAME_FIELD: username, 'defaults': openid_data}
-        user, created = UserModel.objects.update_or_create(**args)
         kc_user = KeycloakModel.objects.create(
             user=user, UID=uid, subdomain=usersubdomain
         )
@@ -296,10 +292,13 @@ def get_client_secret(realm_name):
             None,
         )
         if client:
-            return keycloak_admin.get_client_secrets(client['id'])['value']
+            secret = keycloak_admin.get_client_secrets(client['id']).get('value')
+            if secret:
+                return secret
+            return getattr(settings, 'KEYCLOAK_CLIENT_SECRET', None)
     except Exception as e:
         LOGGER.error(
             'get_client_secret failed for realm %s: %s', realm_name, e,
             exc_info=True,
         )
-    return None
+    return getattr(settings, 'KEYCLOAK_CLIENT_SECRET', None)
