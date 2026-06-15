@@ -16,6 +16,7 @@ from kpi.utils.spectacular_processing import (
 )
 from kpi.utils.urls import is_request_for_html
 from kpi.views.v2.swagger_ui import ExtendedSwaggerUIView
+from kobo.apps.oc_tenant_auth.oidc_views import oidc_callback, oidc_login
 
 admin.autodiscover()
 admin.site.login = staff_member_required(admin.site.login, login_url=settings.LOGIN_URL)
@@ -63,6 +64,9 @@ urlpatterns = [
     re_path(r'^api-auth/',
             include('rest_framework.urls', namespace='rest_framework')),
     re_path(r'^accounts/logout/', logout),
+    # Override allauth's OIDC views with caching versions (must come before allauth include)
+    path('accounts/oidc/<provider_id>/login/', oidc_login, name='openid_connect_login'),
+    path('accounts/oidc/<provider_id>/login/callback/', oidc_callback, name='openid_connect_callback'),
     path('accounts/', include('allauth.urls')),  # Must be after kpi.url, login
     re_path(
         r'^accounts/register/?',

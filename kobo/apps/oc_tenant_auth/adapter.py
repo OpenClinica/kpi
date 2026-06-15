@@ -1,16 +1,41 @@
 import base64
 import json
 import logging
+import time
 
 import requests
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
+from django.core.cache import cache
 
 from .backend import get_realm_name, get_client_secret
 from .models import KeycloakTenantUser
 from .utils import get_subdomain
 
 LOGGER = logging.getLogger(__name__)
+
+_CACHE_TTL = 86400  # 1 day; if realm/secret/customer changes, clear stale keys:
+# docker exec redis redis-cli KEYS "oc:*" | xargs docker exec redis redis-cli DEL
+
+
+def _cached_realm_name(request):
+    subdomain = get_subdomain(request)
+    key = f'oc:realm_name:{subdomain}'
+    val = cache.get(key)
+    if val is None:
+        val = get_realm_name(request)
+        cache.set(key, val, _CACHE_TTL)
+    return val
+
+
+def _cached_client_secret(realm_name):
+    key = f'oc:client_secret:{realm_name}'
+    val = cache.get(key)
+    if val is None:
+        val = get_client_secret(realm_name)
+        if val:
+            cache.set(key, val, _CACHE_TTL)
+    return val
 
 
 def _decode_jwt_payload(token):
@@ -31,8 +56,8 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         """Inject per-subdomain Keycloak realm URL and client secret."""
         app = super().get_app(request, provider, client_id=client_id)
         if provider == 'keycloak' and request is not None:
-            realm_name = get_realm_name(request)
-            client_secret = get_client_secret(realm_name)
+            realm_name = _cached_realm_name(request)
+            client_secret = _cached_client_secret(realm_name)
             realm_url = f'{settings.KEYCLOAK_AUTH_URI}/auth/realms/{realm_name}'
             app.settings = {**app.settings, 'server_url': realm_url}
             if client_secret:
@@ -110,6 +135,9 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         if access_token and request:
             self._store_user_info(request, access_token)
             self._store_customer_info(request, access_token)
+            request.session['oc_access_token'] = access_token
+            request.session['oc_token_validated_at'] = time.time()
+            request.session['oc_fd_base_username'] = user.username.rsplit('+', 1)[0]
 
         user_type = extra_data.get(
             'https://www.openclinica.com/userContext', {}
@@ -169,18 +197,29 @@ class TenantAwareSocialAccountAdapter(DefaultSocialAccountAdapter):
         if not customer_uuid:
             LOGGER.error('Empty customerUuid received from access_token')
             return
-        customer_url = (
-            f'{settings.OC_BUILD_URL}/customer-service/api/customers/{customer_uuid}'
-        )
-        headers = {'Authorization': f'Bearer {access_token}'}
-        try:
-            response = requests.get(customer_url, headers=headers, timeout=10)
-            response.raise_for_status()
-            data = response.json()
-            request.session['oc_customer_name'] = data.get('name')
-            request.session['oc_customer_shared_infra'] = data.get('sharedInfra', False)
-        except Exception as exc:
-            LOGGER.error(
-                'Failed to retrieve customer info for customerUuid %s: %s',
-                customer_uuid, exc,
+
+        key = f'oc:customer_info:{customer_uuid}'
+        data = cache.get(key)
+        if data is None:
+            customer_url = (
+                f'{settings.OC_BUILD_URL}/customer-service/api/customers/{customer_uuid}'
             )
+            headers = {'Authorization': f'Bearer {access_token}'}
+            try:
+                response = requests.get(customer_url, headers=headers, timeout=10)
+                response.raise_for_status()
+                raw = response.json()
+                data = {
+                    'name': raw.get('name'),
+                    'sharedInfra': raw.get('sharedInfra', False),
+                }
+                cache.set(key, data, _CACHE_TTL)
+            except Exception as exc:
+                LOGGER.error(
+                    'Failed to retrieve customer info for customerUuid %s: %s',
+                    customer_uuid, exc,
+                )
+                return
+
+        request.session['oc_customer_name'] = data['name']
+        request.session['oc_customer_shared_infra'] = data['sharedInfra']
