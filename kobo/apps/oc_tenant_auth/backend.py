@@ -281,8 +281,8 @@ def get_client_secret(realm_name):
         keycloak_admin = KeycloakAdmin(
             server_url=settings.KEYCLOAK_AUTH_URI + '/auth/',
             realm_name=realm_name,
-            user_realm_name=settings.KEYCLOAK_MASTER_REALM,
-            client_id=settings.KEYCLOAK_ADMIN_CLIENT_ID,
+            user_realm_name='master',  # admin credentials always live in Keycloak's master realm, regardless of tenant realm
+            client_id='admin-cli',  # Keycloak's built-in admin service account; the only client that can fetch realm secrets
             client_secret_key=settings.KEYCLOAK_ADMIN_CLIENT_SECRET,
             verify=True,
         )

@@ -2315,20 +2315,15 @@ SECURE_REFERRER_POLICY = env(
 X_OPENROSA_ACCEPT_CONTENT_LENGTH_DEFAULT = os.environ.get('X_OPENROSA_ACCEPT_CONTENT_LENGTH_DEFAULT', '100000000')
 OC_BUILD_URL = os.environ.get('OC_BUILD_URL', '')
 
-OIDC_RP_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'formdesigner')
-OIDC_RP_SCOPES = 'openid profile email'
-OIDC_RP_SIGN_ALGO = 'RS256'
-OIDC_CALLBACK_CLASS = 'kobo.apps.oc_tenant_auth.views.OCAuthenticationCallbackView'
 ALLOW_LOGOUT_GET_METHOD = True
 
-PUBLIC_URI_FOR_KEYCLOAK = os.environ.get('PUBLIC_URI', 'http://cust2.kobo.local')
-KEYCLOAK_AUTH_URI = os.environ.get('KEYCLOAK_AUTH_URI', 'https://auth.openclinica-dev.io')
-KEYCLOAK_DEFAULT_REALM = os.environ.get('KEYCLOAK_DEFAULT_REALM', 'cust2-aws-dev')
-KEYCLOAK_MASTER_REALM = os.environ.get('KEYCLOAK_MASTER_REALM', 'master')
+KEYCLOAK_AUTH_URI = env.str('KEYCLOAK_AUTH_URI')
+KEYCLOAK_DEFAULT_REALM = env.str('KEYCLOAK_DEFAULT_REALM')
 KEYCLOAK_CLIENT_ID = os.environ.get('KEYCLOAK_CLIENT_ID', 'formdesigner')
-KEYCLOAK_CLIENT_SECRET = os.environ.get('KEYCLOAK_CLIENT_SECRET', 'client-secret')
-KEYCLOAK_ADMIN_CLIENT_ID = os.environ.get('KEYCLOAK_ADMIN_CLIENT_ID', 'admin-cli')
-KEYCLOAK_ADMIN_CLIENT_SECRET = os.environ.get('KEYCLOAK_ADMIN_CLIENT_SECRET', 'admin-client-secret')
+KEYCLOAK_CLIENT_SECRET = env.str('KEYCLOAK_CLIENT_SECRET')
+# KEYCLOAK_MASTER_REALM ('master') and KEYCLOAK_ADMIN_CLIENT_ID ('admin-cli') are Keycloak architectural
+# constants that never vary across deployments, so they are hardcoded directly in backend.py.
+KEYCLOAK_ADMIN_CLIENT_SECRET = env.str('KEYCLOAK_ADMIN_CLIENT_SECRET')
 
 SOCIALACCOUNT_ADAPTER = (
     'kobo.apps.oc_tenant_auth.adapter.TenantAwareSocialAccountAdapter'
