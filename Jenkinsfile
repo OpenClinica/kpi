@@ -44,9 +44,13 @@ pipeline {
             }
             steps {
                 // OC fork: authenticate the private @openclinica/logic-builder clone.
-                // Single-quoted sh body -> ${GH_TOKEN} expands in the shell from the
-                // masked credential env var, never in Groovy (so it isn't logged).
-                withCredentials([string(credentialsId: 'jenkins-github-token-as-password', variable: 'GH_TOKEN')]) {
+                // The credential is a Username-with-password (username + GitHub token),
+                // so bind it with usernamePassword — a string() binding fails with
+                // "is of type 'Username with password' where StringCredentials was
+                // expected". Single-quoted sh body -> ${GH_USER}/${GH_TOKEN} expand in
+                // the shell from the masked credential env vars, never in Groovy (so
+                // they aren't logged).
+                withCredentials([usernamePassword(credentialsId: 'jenkins-github-token-as-password', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                     sh '''
                         set -e
                         apt-get update -qq
@@ -59,7 +63,7 @@ pipeline {
                         # wipes it on exit, success or failure.
                         export GIT_CONFIG_GLOBAL="$(mktemp)"
                         trap 'rm -f "$GIT_CONFIG_GLOBAL"' EXIT
-                        git config --global url."https://x-access-token:${GH_TOKEN}@github.com/".insteadOf "ssh://git@github.com/"
+                        git config --global url."https://${GH_USER}:${GH_TOKEN}@github.com/".insteadOf "ssh://git@github.com/"
                         npm ci --legacy-peer-deps --cache /tmp/.npm-cache
                         npm run test:unit
                     '''
@@ -98,9 +102,11 @@ pipeline {
                     // OC fork: pass the GitHub token to BuildKit as a secret so the
                     // Dockerfile's npm-install stage can clone the private
                     // @openclinica/logic-builder (id must match the Dockerfile's
-                    // `--mount=type=secret,id=gh_token`). `env=GH_TOKEN` reads it from
-                    // the masked credential env var, so it never appears in the log.
-                    withCredentials([string(credentialsId: 'jenkins-github-token-as-password', variable: 'GH_TOKEN')]) {
+                    // `--mount=type=secret,id=gh_token`). The credential is a
+                    // Username-with-password, so bind with usernamePassword and feed
+                    // the password component (the token) to BuildKit; `env=GH_TOKEN`
+                    // reads the masked env var, so it never appears in the log.
+                    withCredentials([usernamePassword(credentialsId: 'jenkins-github-token-as-password', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
                         sh "docker buildx build --builder arm64builder --platform linux/aarch64 --secret id=gh_token,env=GH_TOKEN -t ${registry}:${tag_version} --push ."
                     }
                   }
