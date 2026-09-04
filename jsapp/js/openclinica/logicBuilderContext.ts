@@ -157,7 +157,7 @@ function readRowChoices(row: any): FormChoice[] | undefined {
  * Only xlform's Group class (plain, repeat, and kobomatrix groups) is a group.
  * `forEachRow` is deliberately NOT the test: rank and score QUESTIONS gain a
  * forEachRow via ScoreRankMixin (model.row.coffee) to walk their sub-rows, and
- * would otherwise serialise as empty groups, losing type, logic, and sub-rows.
+ * would otherwise serialise as empty groups, losing their type and logic.
  */
 function isGroupRow(row: any): boolean {
   try {
@@ -169,28 +169,6 @@ function isGroupRow(row: any): boolean {
     console.warn('Logic Builder: failed to classify a row for AI context', e)
     return false
   }
-}
-
-/**
- * Sub-rows of a rank or score question (rank levels / score rows). They are
- * SimpleRows reachable only through the mixin's forEachRow, which yields the
- * question itself first. Empty for groups and for every other row.
- */
-function readSubRows(row: any): any[] {
-  if (isGroupRow(row) || typeof row?.forEachRow !== 'function') {
-    return []
-  }
-  const subs: any[] = []
-  try {
-    row.forEachRow((r: any) => {
-      if (r !== row) {
-        subs.push(r)
-      }
-    }, {})
-  } catch (e) {
-    console.warn('Logic Builder: failed to read sub-rows for AI context', e)
-  }
-  return subs
 }
 
 function isRepeatRow(row: any): boolean {
@@ -277,11 +255,6 @@ function walk(models: unknown, targetRow: any, depth: number): FormRow[] {
   }
   for (const row of models) {
     pushRow(row)
-    // Rank/score sub-rows follow their question as siblings — the order xlform's
-    // own walk and the XLSForm export use (begin_score, rows…, end_score).
-    for (const sub of readSubRows(row)) {
-      pushRow(sub)
-    }
   }
   return out
 }
