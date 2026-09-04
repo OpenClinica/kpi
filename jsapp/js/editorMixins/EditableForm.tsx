@@ -1075,7 +1075,9 @@ export default function EditableForm(props: EditableFormProps) {
       }
       // OC-28661: primary language changed — tear down the existing app so the
       // editor re-initializes with the new primary language's labels.
-      app.$el.remove()
+      // app.remove() offs the namespaced $(document)/(window) handlers registered
+      // in SurveyFragmentApp.initialize before removing the DOM node.
+      app.remove()
       cleanupAppForSurveyContent()
     }
 

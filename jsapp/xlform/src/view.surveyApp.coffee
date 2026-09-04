@@ -146,7 +146,7 @@ module.exports = do ->
       @canAddToLibrary = options.canAddToLibrary or false
       @surveyStateStore = options.stateStore || {trigger:$.noop, setState:$.noop}
 
-      $(document).on 'click', @deselect_rows.bind(@)
+      $(document).on 'click.surveyApp', @deselect_rows.bind(@)
 
       @survey.settings.on 'change:form_id', (model, value) =>
         $('.form-id').text(value)
@@ -174,7 +174,7 @@ module.exports = do ->
       # Keyboard Navigation
       currentLabelIndex = 0
       hoverOver = false
-      $(window).on "keydown", (evt)=>
+      $(window).on "keydown.surveyApp", (evt)=>
         focusedElement = $(':focus')
         if evt.keyCode == 13
           evt.preventDefault()
@@ -209,6 +209,11 @@ module.exports = do ->
       model.ordinal = position
       @survey.rows.add(model, at: position)
       return
+
+    remove: ->
+      $(document).off 'click.surveyApp'
+      $(window).off 'keydown.surveyApp'
+      super
 
     forceSelectRow: (evt)->
       # forceSelectRow is used to mock the multiple-select key
