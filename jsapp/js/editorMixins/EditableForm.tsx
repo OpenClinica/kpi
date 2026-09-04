@@ -232,6 +232,9 @@ export default function EditableForm(props: EditableFormProps) {
   const onSurveyChangeDebounced = debounce(onSurveyChange, 200)
 
   const [app, setApp] = useState<SurveyApp | undefined>(undefined)
+  // OC-28661: track the primary language at last editor init so we can detect
+  // when the user changes it via Manage Languages and force a re-init.
+  const prevPrimaryLangRef = useRef<string | null | undefined>(undefined)
 
   const assetUid = props.assetUid || ''
 
@@ -264,6 +267,14 @@ export default function EditableForm(props: EditableFormProps) {
 
   useEffect(() => {
     if (state.asset) {
+      const currentPrimaryLang = state.asset.content?.translations?.[0]
+      // OC-28661: when the primary language changes after the editor is already
+      // open (e.g. user clicks "Make primary" in Manage Languages), force a
+      // full re-init so the editor shows the new primary language's labels.
+      const primaryLangChanged =
+        prevPrimaryLangRef.current !== undefined && prevPrimaryLangRef.current !== currentPrimaryLang
+      prevPrimaryLangRef.current = currentPrimaryLang
+
       let settingsStyle: FormStyleName | undefined
       // OC fork: form id and version number live in the form settings alongside `style`.
       let settingsVersion: string | undefined
@@ -273,15 +284,19 @@ export default function EditableForm(props: EditableFormProps) {
         settingsVersion = state.asset.content.settings.version
         settingsFormId = state.asset.content.settings.form_id
       }
-      launchAppForSurveyContent(state.asset.content, {
-        name: state.asset.name,
-        settings__style: settingsStyle,
-        settings__version: settingsVersion,
-        settings__form_id: settingsFormId,
-        files: state.asset.files,
-        asset_type: state.asset.asset_type,
-        asset: state.asset,
-      })
+      launchAppForSurveyContent(
+        state.asset.content,
+        {
+          name: state.asset.name,
+          settings__style: settingsStyle,
+          settings__version: settingsVersion,
+          settings__form_id: settingsFormId,
+          files: state.asset.files,
+          asset_type: state.asset.asset_type,
+          asset: state.asset,
+        },
+        primaryLangChanged,
+      )
     }
   }, [state.asset])
 
@@ -1051,11 +1066,17 @@ export default function EditableForm(props: EditableFormProps) {
    * It builds `dkobo_xlform.view.SurveyApp` using asset data and then appends
    * it to `.form-wrap` node.
    */
-  function launchAppForSurveyContent(assetContent?: AssetContent, _state?: LaunchAppData) {
+  function launchAppForSurveyContent(assetContent?: AssetContent, _state?: LaunchAppData, force = false) {
     // If we already rendered the app in the formWrapRef container, there is no need to do it again. Without this check
     // we would end up adding copies of the app in HTML
     if (app !== undefined) {
-      return
+      if (!force) {
+        return
+      }
+      // OC-28661: primary language changed — tear down the existing app so the
+      // editor re-initializes with the new primary language's labels.
+      app.$el.remove()
+      cleanupAppForSurveyContent()
     }
 
     const newState: Partial<EditableFormState> & Partial<LaunchAppData> = _state || {}
