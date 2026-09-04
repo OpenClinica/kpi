@@ -1,4 +1,5 @@
 import chai from 'chai'
+import configs from '../../xlform/src/model.configs'
 import { EXCLUDED_COLUMNS, SENT_COLUMNS, buildFormContext, parseWidthToken, readItemName } from './logicBuilderContext'
 
 // Minimal Backbone/xlform fakes. `columns` are RowDetail values (row.get(col).get('value'));
@@ -313,5 +314,40 @@ describe('readItemName (P1.2)', () => {
     }
     chai.expect(readItemName(hostile)).to.equal('')
     chai.expect(warnSpy.mock.calls.length).to.be.above(0)
+  })
+})
+
+describe('allow-list drift guard (P1.5)', () => {
+  // The column universe is what xlform DECLARES: the export column order plus
+  // the default details of a new question and a new group. A column that exists
+  // only as a detail-view mixin is outside it until someone declares it.
+  it('partitions every column xlform declares into SENT_COLUMNS or EXCLUDED_COLUMNS', () => {
+    const declared = new Set<string>([
+      ...configs.columns,
+      ...Object.keys(configs.newRowDetails),
+      ...Object.keys(configs.newGroupDetails),
+    ])
+    const sent = new Set(SENT_COLUMNS)
+    const excluded = new Set(EXCLUDED_COLUMNS)
+    chai
+      .expect(
+        [...sent].filter((c) => excluded.has(c)),
+        'a column cannot be both sent and excluded',
+      )
+      .to.deep.equal([])
+    chai
+      .expect(
+        [...declared].filter((c) => !sent.has(c) && !excluded.has(c)),
+        'xlform declares a column the AI context does not place: add it to SENT_COLUMNS (and restate the ' +
+          'About AI Generate disclosure + PRD §7 Privacy) or to EXCLUDED_COLUMNS',
+      )
+      .to.deep.equal([])
+    chai
+      .expect(
+        [...sent, ...excluded].filter((c) => !declared.has(c)),
+        'column no longer declared by xlform',
+      )
+      .to.deep.equal([])
+    chai.expect(declared.size).to.equal(24) // bump deliberately when xlform changes
   })
 })
