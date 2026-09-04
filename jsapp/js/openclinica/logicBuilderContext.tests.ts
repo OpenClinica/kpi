@@ -178,7 +178,7 @@ describe('buildFormContext (P1.5)', () => {
   })
 
   it('uses the type id, dropping a trailing list name', () => {
-    const withId = q('A', { typeId: 'select_one', columns: { type: 'select_one yesno' } })
+    const withId = q('A', { typeId: 'select_one', columns: { type: 'select_multiple yesno' } })
     const noId = q('B', { columns: { type: 'select_multiple colors' } })
     surveyOf([withId, noId])
     chai.expect(buildFormContext(withId).rows.map((r) => r.type)).to.deep.equal(['select_one', 'select_multiple'])
