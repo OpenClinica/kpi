@@ -239,6 +239,54 @@ describe('buildFormContext (P1.5)', () => {
     })
   })
 
+  it('sends group hint, short display name, description, and contact data type when a group carries them', () => {
+    const group = fakeRow({
+      columns: {
+        name: 'VITALS',
+        type: 'group',
+        label: 'Vitals',
+        hint: 'Measure seated',
+        'bind::oc:briefdescription': 'Vitals',
+        'bind::oc:description': 'Vital signs block',
+        'instance::oc:contactdata': 'email',
+        readonly: true,
+      },
+      children: [],
+    })
+    const target = q('T')
+    surveyOf([group, target])
+    chai.expect(buildFormContext(target).rows[0]).to.deep.equal({
+      kind: 'group',
+      name: 'VITALS',
+      type: 'group',
+      label: 'Vitals',
+      hint: 'Measure seated',
+      shortDisplayName: 'Vitals',
+      description: 'Vital signs block',
+      contactDataType: 'email',
+      logic: {},
+      rows: [],
+    })
+  })
+
+  it('reads a plain (non-detail) attribute directly and ignores a bare object', () => {
+    const plain = q('P')
+    plain.get = (col: string) =>
+      col === 'name'
+        ? 'P'
+        : col === 'type'
+          ? 'text'
+          : col === 'hint'
+            ? 'plain hint'
+            : col === 'label'
+              ? { odd: true }
+              : undefined
+    surveyOf([plain])
+    chai
+      .expect(buildFormContext(plain).rows[0])
+      .to.deep.equal({ kind: 'question', name: 'P', type: 'text', hint: 'plain hint', isTarget: true, logic: {} })
+  })
+
   it('skips nameless and error rows, except a nameless target', () => {
     const nameless = fakeRow({ columns: { type: 'text' } })
     const err = q('E', { error: true })

@@ -78,7 +78,7 @@ function readDetail(row: any, column: string): string {
     if (Array.isArray(raw)) {
       return raw.length ? String(raw[0] ?? '') : ''
     }
-    return String(raw)
+    return typeof raw === 'object' ? '' : String(raw)
   } catch (e) {
     console.warn('Logic Builder: failed to read a column for AI context', column, e)
     return ''
@@ -203,6 +203,10 @@ function buildGroupRow(row: any, name: string, isTarget: boolean, targetRow: any
     name,
     type: readType(row),
     ...opt('label', readDetail(row, 'label')),
+    ...opt('hint', readDetail(row, 'hint')),
+    ...opt('shortDisplayName', readDetail(row, 'bind::oc:briefdescription')),
+    ...opt('description', readDetail(row, 'bind::oc:description')),
+    ...opt('contactDataType', readDetail(row, 'instance::oc:contactdata')),
     ...opt('appearance', appearance),
     ...opt('width', parseWidthToken(appearance)),
     ...(isTarget ? { isTarget: true as const } : {}),
