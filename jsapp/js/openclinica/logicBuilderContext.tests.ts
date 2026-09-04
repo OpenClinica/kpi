@@ -6,13 +6,16 @@ import { EXCLUDED_COLUMNS, SENT_COLUMNS, buildFormContext, parseWidthToken, read
 // getValue mirrors them for the name reader. A select row answers _isSelectQuestion() and hands
 // out its choice list via getList(), whose options.models are Backbone models where get('name')
 // is the choice VALUE, get('label') its label, get('image') its image filename. A row with
-// `children` is a group: it has forEachRow (how the serializer recognises groups) and rows.models.
+// `children` is a group: it answers isGroup() (how the serializer recognises groups) and, like xlform's
+// Group, also has forEachRow and rows.models. A row with `subRows` is a rank/score QUESTION: it gains a
+// forEachRow (yielding itself, then its SimpleRow sub-rows) but is not a group.
 type Stored = string | string[] | boolean
 interface FakeRowSpec {
   columns?: Record<string, Stored>
   typeId?: string
   select?: Array<{ name: string; label: string; image?: string }>
   children?: any[]
+  subRows?: any[]
   repeat?: boolean
   error?: boolean
 }
@@ -42,11 +45,24 @@ function fakeRow(spec: FakeRowSpec): any {
     isError: () => Boolean(spec.error),
   }
   if (spec.children) {
+    row.isGroup = () => true
     row.forEachRow = () => {}
     row.rows = { models: spec.children }
     row._isRepeat = () => Boolean(spec.repeat)
   }
+  if (spec.subRows) {
+    const subs = spec.subRows
+    row.forEachRow = (cb: (r: any) => void) => {
+      cb(row)
+      subs.forEach(cb)
+    }
+  }
   return row
+}
+
+/** A SimpleRow (rank level / score row): plain Backbone attributes, getValue === get. */
+function plainRow(attrs: Record<string, string>): any {
+  return { get: (k: string) => attrs[k], getValue: (k: string) => attrs[k] }
 }
 
 /** Wire getSurvey() on every row (recursively) to a survey holding `rows` at its top level. */
@@ -285,6 +301,35 @@ describe('buildFormContext (P1.5)', () => {
     chai
       .expect(buildFormContext(plain).rows[0])
       .to.deep.equal({ kind: 'question', name: 'P', type: 'text', hint: 'plain hint', isTarget: true, logic: {} })
+  })
+
+  it('serialises a rank/score question as a question followed by its sub-rows, never as a group', () => {
+    const food = plainRow({ name: 'FOOD', type: 'score__row', label: 'Food' })
+    const service = plainRow({ name: 'SERVICE', type: 'score__row', label: 'Service' })
+    const score = q('SATISFACTION', {
+      typeId: 'score',
+      columns: { type: 'score', label: 'Rate each', required: 'yes' },
+      subRows: [food, service],
+    })
+    const after = q('AFTER')
+    surveyOf([score, after])
+    chai.expect(buildFormContext(after).rows).to.deep.equal([
+      { kind: 'question', name: 'SATISFACTION', type: 'score', label: 'Rate each', logic: { required: 'yes' } },
+      { kind: 'question', name: 'FOOD', type: 'score__row', label: 'Food', logic: {} },
+      { kind: 'question', name: 'SERVICE', type: 'score__row', label: 'Service', logic: {} },
+      { kind: 'question', name: 'AFTER', type: 'text', isTarget: true, logic: {} },
+    ])
+  })
+
+  it('marks a rank/score sub-row as the target by identity', () => {
+    const level = plainRow({ name: 'L1', type: 'rank__level', label: 'First' })
+    const rank = q('PRIORITY', { typeId: 'rank', columns: { type: 'rank' }, subRows: [level] })
+    surveyOf([rank])
+    level.getSurvey = rank.getSurvey
+    chai.expect(buildFormContext(level).rows.map((r) => [r.name, r.isTarget])).to.deep.equal([
+      ['PRIORITY', undefined],
+      ['L1', true],
+    ])
   })
 
   it('skips nameless and error rows, except a nameless target', () => {

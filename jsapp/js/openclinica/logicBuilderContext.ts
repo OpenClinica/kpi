@@ -153,9 +153,44 @@ function readRowChoices(row: any): FormChoice[] | undefined {
   }
 }
 
-/** Plain, repeat, and kobomatrix groups all build on xlform's Group class, which is what has forEachRow. */
+/**
+ * Only xlform's Group class (plain, repeat, and kobomatrix groups) is a group.
+ * `forEachRow` is deliberately NOT the test: rank and score QUESTIONS gain a
+ * forEachRow via ScoreRankMixin (model.row.coffee) to walk their sub-rows, and
+ * would otherwise serialise as empty groups, losing type, logic, and sub-rows.
+ */
 function isGroupRow(row: any): boolean {
-  return typeof row?.forEachRow === 'function'
+  try {
+    if (typeof row?.isGroup === 'function') {
+      return Boolean(row.isGroup())
+    }
+    return row?.constructor?.kls === 'Group'
+  } catch (e) {
+    console.warn('Logic Builder: failed to classify a row for AI context', e)
+    return false
+  }
+}
+
+/**
+ * Sub-rows of a rank or score question (rank levels / score rows). They are
+ * SimpleRows reachable only through the mixin's forEachRow, which yields the
+ * question itself first. Empty for groups and for every other row.
+ */
+function readSubRows(row: any): any[] {
+  if (isGroupRow(row) || typeof row?.forEachRow !== 'function') {
+    return []
+  }
+  const subs: any[] = []
+  try {
+    row.forEachRow((r: any) => {
+      if (r !== row) {
+        subs.push(r)
+      }
+    }, {})
+  } catch (e) {
+    console.warn('Logic Builder: failed to read sub-rows for AI context', e)
+  }
+  return subs
 }
 
 function isRepeatRow(row: any): boolean {
@@ -223,21 +258,29 @@ function walk(models: unknown, targetRow: any, depth: number): FormRow[] {
     return []
   }
   const out: FormRow[] = []
-  for (const row of models) {
+  const pushRow = (row: any): void => {
     try {
       if (typeof row?.isError === 'function' && row.isError()) {
-        continue
+        return
       }
       const isTarget = row === targetRow
       const name = readItemName(row)
       if (!name && !isTarget) {
-        continue // a nameless row cannot be referenced in an expression
+        return // a nameless row cannot be referenced in an expression
       }
       out.push(
         isGroupRow(row) ? buildGroupRow(row, name, isTarget, targetRow, depth) : buildQuestionRow(row, name, isTarget),
       )
     } catch (e) {
       console.warn('Logic Builder: dropping a row the AI context could not serialise', e)
+    }
+  }
+  for (const row of models) {
+    pushRow(row)
+    // Rank/score sub-rows follow their question as siblings — the order xlform's
+    // own walk and the XLSForm export use (begin_score, rows…, end_score).
+    for (const sub of readSubRows(row)) {
+      pushRow(sub)
     }
   }
   return out
