@@ -1075,9 +1075,15 @@ export default function EditableForm(props: EditableFormProps) {
       }
       // OC-28661: primary language changed — tear down the existing app so the
       // editor re-initializes with the new primary language's labels.
+      // unmountAll first so Generate-button React roots inside open drawers are
+      // cleanly unmounted before app.remove() yanks their DOM nodes.
+      unmountAll()
       // app.remove() offs the namespaced $(document)/(window) handlers registered
       // in SurveyFragmentApp.initialize before removing the DOM node.
       app.remove()
+      // Reset app to undefined so a failed re-init (Survey.loadDict throws, or
+      // form-wrap not found) doesn't leave a stale reference that blocks retry.
+      setApp(undefined)
       cleanupAppForSurveyContent()
     }
 

@@ -211,6 +211,8 @@ module.exports = do ->
       return
 
     remove: ->
+      # Namespace is class-scoped (no per-instance suffix) — safe as long as only
+      # one SurveyApp is ever live, which is the current invariant in Form Designer.
       $(document).off 'click.surveyApp'
       $(window).off 'keydown.surveyApp'
       super
