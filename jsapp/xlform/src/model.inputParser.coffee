@@ -103,10 +103,14 @@ module.exports = do ->
   normalizeRequiredValues = (survey) ->
     normalizedSurvey = cloneDeep(survey)
     for row in normalizedSurvey
-      if row.required in $configs.truthyValues
-        row.required = true
-      else if row.required in $configs.falsyValues or row.required in [undefined, '']
-        row.required = false
+      # OC-28717: 'yes' (Always) and '' (Never) are the canonical values written
+      # by the tri-state selector — preserve them as-is so the XLSForm round-trips
+      # correctly. Only normalise the legacy synonym variants from older XLSForms.
+      unless row.required is 'yes' or row.required is ''
+        if row.required in $configs.truthyValues
+          row.required = true
+        else if row.required in $configs.falsyValues or row.required is undefined
+          row.required = false
     return normalizedSurvey
 
   inputParser.parseArr = parseArr

@@ -409,9 +409,9 @@ describe('readCurrentExpression (P1.3 AC2)', () => {
     }
   })
 
-  it("keeps 'yes' (Always) and real expressions non-empty for required — those DO confirm", () => {
+  it("'yes' (Always) is a sentinel — returns '' — real expressions remain non-empty and DO confirm", () => {
     const yes = { set: jest.fn(), get: jest.fn(() => 'yes'), getValue: jest.fn() }
-    chai.expect(readCurrentExpression(makeRow({ detail: yes }).row, 'required')).to.equal('yes')
+    chai.expect(readCurrentExpression(makeRow({ detail: yes }).row, 'required')).to.equal('')
     const expr = { set: jest.fn(), get: jest.fn(() => '${AGE} > 18'), getValue: jest.fn() }
     chai.expect(readCurrentExpression(makeRow({ detail: expr }).row, 'required')).to.equal('${AGE} > 18')
   })

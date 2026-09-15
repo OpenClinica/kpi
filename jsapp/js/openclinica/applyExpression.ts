@@ -124,11 +124,14 @@ export function applyExpressionToRow(row: any, attribute: string, expression: st
 }
 
 // Attributes whose stored value can be a state sentinel rather than an
-// expression: the Required toggle persists '' | true | false | 'true' |
-// 'false' for its simple states (mirrors view.mandatorySetting.coffee's own
-// hasExpression test). Only a real expression — or the XLSForm 'yes' the
-// bridge writes for Always — should trigger the overwrite confirmation.
-const REQUIRED_EMPTY_SENTINELS = new Set(['', 'true', 'false'])
+// expression: the Required tri-state selector (OC-28717) writes 'yes' (Always)
+// and '' (Never). '' is a sentinel — no expression, no confirmation. 'true' /
+// 'false' are backward-compat stringifications of the boolean that inputParser
+// normalises older XLSForms to — also sentinels. 'yes' (Always) is also a
+// sentinel (OC-28718): the state-change confirmation is handled by
+// MandatorySettingView._showAc3ModalForGenerate(), so the AI Generator's own
+// overwrite confirmation must not fire a second time for Always.
+const REQUIRED_EMPTY_SENTINELS = new Set(['', 'true', 'false', 'yes'])
 
 /**
  * The panel editor's current expression for (row, attribute): reads RAW from
@@ -143,8 +146,8 @@ const REQUIRED_EMPTY_SENTINELS = new Set(['', 'true', 'false'])
  * panel update facade state but never call `model.set('value')`, so empty raw
  * means "unknown", not "empty". When raw is empty, consult the live
  * serialization to detect panel-built content. For Required, empty sentinels
- * ('', 'true', 'false', and boolean true/false) signal pristine or toggled
- * simple states that should not trigger confirmation.
+ * ('', 'true', 'false', 'yes', and boolean true/false) signal pristine or
+ * toggled simple states that should not trigger confirmation.
  */
 export function readCurrentExpression(row: any, attribute: string): string {
   const detail = row?.get?.(attribute)

@@ -1,5 +1,6 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
+alertify = require 'alertifyjs'
 $configs = require './model.configs'
 $baseView = require './view.pluggedIn.backboneView'
 $viewTemplates = require './view.templates'
@@ -16,33 +17,48 @@ module.exports = do ->
     initialize: ({@model, @onChange, @hideConditional}) ->
       @hideConditional = @hideConditional or false
       @isConditionalSelected = false
+      @_selectorVal = ''
+      @_ac3ModalPending = false
+      @_hasRenderedOnce = false
       if @model
         @model.on('change', @render, @)
       return
 
     render: ->
+      prevIsConditional = @isConditionalSelected
       reqVal = @getChangedValue()
-      # Sync the conditional flag with model state (handles undo/redo/external changes)
-      if reqVal is 'true' or reqVal is 'false'
+      # '' excluded: ambiguous (Never vs Conditional-no-expression)
+      # onRadioChange owns @isConditionalSelected for '' case
+      if reqVal is 'yes' or reqVal is 'true' or reqVal is 'false'
         @isConditionalSelected = false
       else if @hideConditional
-        # Conditional option is hidden for this question type — force to 'false'
-        # so no radio is left in an unrepresentable selected state
-        @setNewValue('false')
-        reqVal = 'false'
+        # Conditional option is hidden for this question type — force to Never
+        # so no radio is left in an unrepresentable selected state.
+        # OC-28717: canonical Never is '' (not 'false') to keep the XLSForm
+        # required column blank, matching what AC2 specifies.
+        # Guard: setNewValue calls onChange on every invocation — only write
+        # when the value actually needs to change to avoid re-render loops.
+        @setNewValue('') unless reqVal is ''
+        reqVal = ''
         @isConditionalSelected = false
-      else
+      else if reqVal isnt ''
         @isConditionalSelected = true
-      template = $($viewTemplates.$$render("row.mandatorySettingSelector", "required_#{@model.cid}", reqVal, @hideConditional))
+      if not @isConditionalSelected
+        @_selectorVal = reqVal
+      template = $($viewTemplates.$$render("row.mandatorySettingSelector", "required_#{@model.cid}", reqVal, @hideConditional, @isConditionalSelected))
       @$el.html(template)
-      # Sync panel text input if it exists
       if @$panelEl
         panelInput = @$panelEl.find('.mandatory-setting-custom-text')
-        if reqVal isnt 'true' and reqVal isnt 'false'
+        if reqVal isnt 'yes' and reqVal isnt 'true' and reqVal isnt 'false' and reqVal isnt ''
           panelInput.val(reqVal)
         else
           panelInput.val('')
       @_updateRequiredLogicTabVisibility()
+      @_updateStatusBanner()
+      # OC-28718 AC3: detect when Generate applied an expression while selector was Always/Never
+      if @rowView and @_hasRenderedOnce and not prevIsConditional and @isConditionalSelected and not @_ac3ModalPending
+        @_showAc3ModalForGenerate()
+      @_hasRenderedOnce = true
       return @
 
     insertInDOM: (rowView) ->
@@ -51,16 +67,19 @@ module.exports = do ->
       @$panelEl = $($viewTemplates.$$render('row.requiredLogicPanel'))
       @$panelEl.appendTo(rowView.cardSettingsWrap.find('.js-card-settings-required-logic'))
       # OC fork (P1.1): AI Generate button in the Required Logic panel header.
-      generateButtonBridge.mountGenerateButton(
-        @$panelEl.find('.required-logic-panel__header').get(0)
-        { row: @model._parent, attribute: 'required' }
-      )
+      # Not mounted when hideConditional=true — no Conditional option, no Generate.
+      unless @hideConditional
+        generateButtonBridge.mountGenerateButton(
+          @$panelEl.find('.required-logic-panel__header').get(0)
+          { row: @model._parent, attribute: 'required' }
+        )
       @_bindPanelEvents()
       # Populate panel input with existing value if conditional
       reqVal = @getChangedValue()
-      if reqVal isnt 'true' and reqVal isnt 'false'
+      if reqVal isnt 'yes' and reqVal isnt 'true' and reqVal isnt 'false' and reqVal isnt ''
         @$panelEl.find('.mandatory-setting-custom-text').val(reqVal)
       @_updateRequiredLogicTabVisibility()
+      @_updateStatusBanner()
       return
 
     _bindPanelEvents: ->
@@ -96,12 +115,49 @@ module.exports = do ->
       if val is 'custom'
         @isConditionalSelected = true
         @setNewValue('')
+        # setNewValue('') is a no-op when Never is the current state (model already
+        # holds ''), so Backbone suppresses the change event and render() never fires.
+        # Update the banner explicitly so it switches to Conditional immediately.
+        @_updateStatusBanner()
         @_showRequiredLogicTab()
         @$panelEl?.find('.mandatory-setting-custom-text').val('').focus()
         # Don't show the inline error message yet — only after user interaction
       else
+        # OC-28717 AC4: switching away from Conditional while an expression is
+        # present requires explicit confirmation — silently discarding the user's
+        # expression is too easy to trigger by accident.
+        if @isConditionalSelected
+          currentExpr = (@$panelEl?.find('.mandatory-setting-custom-text').val() or '').trim()
+          if currentExpr isnt ''
+            dialog = alertify.dialog('confirm')
+            dialog.set(
+              title: t('Discard Required expression?')
+              message: t('This will discard the current conditional Required expression. Continue?')
+              labels:
+                ok: t('Confirm')
+                cancel: t('Cancel')
+              onok: =>
+                @isConditionalSelected = false
+                @setNewValue(val)
+                @_hideRequiredLogicTab()
+                @hideMessage()
+                return
+              oncancel: =>
+                # Restore the radio to Conditional — browser already moved it.
+                @render()
+                dialog.destroy()
+                return
+            ).show()
+            return
         @isConditionalSelected = false
         @setNewValue(val)
+        # Sync _selectorVal and banner immediately — setNewValue may be a no-op
+        # when the model already holds this value. Switching Conditional (empty)
+        # → Never writes '' both times, so Backbone suppresses the change event
+        # and render() never fires; _selectorVal and the banner stay stuck on
+        # the previous Always/Never state. OC-28718.
+        @_selectorVal = val
+        @_updateStatusBanner()
         @_hideRequiredLogicTab()
         @hideMessage()
       return
@@ -109,19 +165,35 @@ module.exports = do ->
     onCustomTextKeyup: (evt) ->
       if evt.key is 'Enter' or evt.keyCode is 13 or evt.which is 13
         evt.target.blur()
+      else if @_ac3ModalPending
+        # OC-28718: AC3 modal is open — ignore further input events until resolved
+        return
       else
         val = evt.currentTarget.value
-        @setNewValue(val)
-        @$panelEl?.find('.mandatory-setting-custom-text').focus()
-        @showOrHideCondition()
+        if not @isConditionalSelected
+          # Model holds the selector value ('yes'/'') — don't overwrite it until
+          # the user confirms the switch to Conditional.
+          if val.trim() isnt ''
+            @_showAc3ModalForInput()
+        else
+          @setNewValue(val)
+          @$panelEl?.find('.mandatory-setting-custom-text').focus()
+          @showOrHideCondition()
       return
 
     onCustomTextBlur: (evt) ->
+      if @_ac3ModalPending
+        # OC-28718: AC3 modal is open — ignore blur (triggered when modal steals focus)
+        return
       val = evt.currentTarget.value
-      @setNewValue(val)
-      @showOrHideCondition()
-      # P1.11 AC1: on blur only, after the model write above.
-      runSyntaxCheck(@model._parent, 'required', evt.currentTarget)
+      if not @isConditionalSelected
+        if val.trim() isnt ''
+          @_showAc3ModalForInput()
+      else
+        @setNewValue(val)
+        @showOrHideCondition()
+        # P1.11 AC1: on blur only, after the model write above.
+        runSyntaxCheck(@model._parent, 'required', evt.currentTarget)
       return
 
     getChangedValue: ->
@@ -132,46 +204,99 @@ module.exports = do ->
       return String(val)
 
     setNewValue: (val) ->
-      if @model.get('value') is true or @model.get('value') is false
-        if val isnt ''
-          @model.set('value', val)
-      else
-        @model.set('value', val)
-
+      # OC-28717: write unconditionally — the old boolean guard blocked '' (Never)
+      # from being written when the model held a normalised boolean false. Since
+      # the canonical Never value is now '' (empty string), that guard is wrong.
+      @model.set('value', val)
       if typeof @onChange is 'function'
         @onChange(val)
-
       return
 
     _showRequiredLogicTab: ->
       return unless @rowView
-      @rowView.cardSettingsWrap.find('.js-required-logic-tab').show()
       @_updateRequiredLogicTabError()
 
     _hideRequiredLogicTab: ->
       return unless @rowView
-      @rowView.cardSettingsWrap.find('.js-required-logic-tab').hide()
       @rowView.cardSettingsWrap.find('.js-required-logic-error').hide()
 
     _updateRequiredLogicTabVisibility: ->
       return unless @rowView
-      isConditional = @isConditionalSelected
-      if not isConditional
-        reqVal = @getChangedValue()
-        isConditional = reqVal isnt 'true' and reqVal isnt 'false'
-      $tab = @rowView.cardSettingsWrap.find('.js-required-logic-tab')
-      $tab.toggle(isConditional)
-      if isConditional
-        @_updateRequiredLogicTabError()
-      else
-        @rowView.cardSettingsWrap.find('.js-required-logic-error').hide()
+      if @hideConditional
+        @rowView.cardSettingsWrap.find('.js-required-logic-tab').hide()
+        return
+      @rowView.cardSettingsWrap.find('.js-required-logic-tab').show()
+      @_updateRequiredLogicTabError()
 
     _updateRequiredLogicTabError: ->
       return unless @rowView
+      # Error badge is only meaningful for Conditional + no expression; hide it for Always/Never.
+      if not @isConditionalSelected
+        @rowView.cardSettingsWrap.find('.js-required-logic-error').hide()
+        return
       requiredVal = @getChangedValue()
       normalizedRequiredVal = String(requiredVal or '').trim()
-      hasExpression = normalizedRequiredVal isnt '' and normalizedRequiredVal isnt 'true' and normalizedRequiredVal isnt 'false'
+      hasExpression = normalizedRequiredVal isnt '' and normalizedRequiredVal isnt 'yes' and normalizedRequiredVal isnt 'true' and normalizedRequiredVal isnt 'false'
       $errorIcon = @rowView.cardSettingsWrap.find('.js-required-logic-error')
       $errorIcon.toggle(not hasExpression)
+
+    _updateStatusBanner: ->
+      return unless @$panelEl
+      if @isConditionalSelected
+        stateLabel = t('Conditional')
+      else if @_selectorVal is 'yes' or @_selectorVal is 'true'
+        stateLabel = t('Always')
+      else
+        stateLabel = t('Never')
+      @$panelEl.find('.js-required-logic-status').text("#{t('Currently:')} #{stateLabel}")
+      return
+
+    _showAc3Modal: (onConfirm, onCancel) ->
+      @_ac3ModalPending = true
+      isAlways = @_selectorVal is 'yes' or @_selectorVal is 'true'
+      currentStateLabel = if isAlways then t('Always') else t('Never')
+      dialog = alertify.dialog('confirm')
+      dialog.set(
+        title: t('Set Required to Conditional?')
+        message: "#{t('This field is currently')} #{currentStateLabel} #{t('required.')}"
+        labels:
+          ok: t('Set Conditional')
+          cancel: t('Cancel')
+        onok: =>
+          onConfirm()
+          return
+        oncancel: =>
+          onCancel()
+          dialog.destroy()
+          return
+      ).show()
+      return
+
+    _showAc3ModalForInput: ->
+      onConfirm = =>
+        @_ac3ModalPending = false
+        @isConditionalSelected = true
+        latestVal = (@$panelEl?.find('.mandatory-setting-custom-text').val() or '').trim()
+        @setNewValue(latestVal)
+        @showOrHideCondition()
+        # Mirror the blur-time syntax check from onCustomTextBlur — expressions
+        # authored from Always/Never bypass that path via the AC3 modal (OC-28718).
+        runSyntaxCheck(@model._parent, 'required', @$panelEl?.find('.mandatory-setting-custom-text').get(0))
+      onCancel = =>
+        @_ac3ModalPending = false
+        @$panelEl?.find('.mandatory-setting-custom-text').val('')
+      @_showAc3Modal(onConfirm, onCancel)
+      return
+
+    _showAc3ModalForGenerate: ->
+      onConfirm = =>
+        @_ac3ModalPending = false
+        @_updateStatusBanner()
+      onCancel = =>
+        @_ac3ModalPending = false
+        @isConditionalSelected = false
+        @setNewValue(@_selectorVal)
+      @_showAc3Modal(onConfirm, onCancel)
+      return
 
   return MandatorySettingView: MandatorySettingView

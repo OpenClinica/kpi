@@ -100,12 +100,25 @@ describe('buildFormContext (P1.5)', () => {
               label: 'Inner',
               logic: {},
               rows: [
-                { kind: 'question', name: 'WEIGHT', type: 'decimal', label: 'Weight (kg)', isTarget: true, logic: {} },
+                {
+                  kind: 'question',
+                  name: 'WEIGHT',
+                  type: 'decimal',
+                  label: 'Weight (kg)',
+                  isTarget: true,
+                  logic: { required: '' },
+                },
               ],
             },
           ],
         },
-        { kind: 'question', name: 'BMI', type: 'decimal', label: 'BMI', logic: { calculation: '${WEIGHT} div 2' } },
+        {
+          kind: 'question',
+          name: 'BMI',
+          type: 'decimal',
+          label: 'BMI',
+          logic: { required: '', calculation: '${WEIGHT} div 2' },
+        },
       ],
     })
     chai.expect(warnSpy.mock.calls.length).to.equal(0)
@@ -118,7 +131,7 @@ describe('buildFormContext (P1.5)', () => {
     chai.expect(buildFormContext(b).rows.map((r) => r.isTarget)).to.deep.equal([undefined, true])
   })
 
-  it('omits every empty property and logic key (AC2–AC4)', () => {
+  it('omits every empty property and logic key except required, which is always sent (AC2–AC4, OC-28717)', () => {
     const row = q('A', {
       columns: { label: '', hint: '', appearance: '', readonly: '', required: '', calculation: '' },
     })
@@ -128,7 +141,7 @@ describe('buildFormContext (P1.5)', () => {
       name: 'A',
       type: 'text',
       isTarget: true,
-      logic: {},
+      logic: { required: '' },
     })
   })
 
@@ -248,7 +261,7 @@ describe('buildFormContext (P1.5)', () => {
       ['MEDS', 'repeat', { repeatCount: '${N}' }],
       ['OLD', 'group', {}],
       ['GRID', 'kobomatrix', {}],
-      ['T', 'text', {}],
+      ['T', 'text', { required: '' }],
     ])
   })
 
@@ -262,7 +275,7 @@ describe('buildFormContext (P1.5)', () => {
       type: 'kobomatrix',
       label: 'Grid',
       logic: {},
-      rows: [{ kind: 'question', name: 'SCORE', type: 'integer', isTarget: true, logic: {} }],
+      rows: [{ kind: 'question', name: 'SCORE', type: 'integer', isTarget: true, logic: { required: '' } }],
     })
   })
 
@@ -309,9 +322,14 @@ describe('buildFormContext (P1.5)', () => {
               ? { odd: true }
               : undefined
     surveyOf([plain])
-    chai
-      .expect(buildFormContext(plain).rows[0])
-      .to.deep.equal({ kind: 'question', name: 'P', type: 'text', hint: 'plain hint', isTarget: true, logic: {} })
+    chai.expect(buildFormContext(plain).rows[0]).to.deep.equal({
+      kind: 'question',
+      name: 'P',
+      type: 'text',
+      hint: 'plain hint',
+      isTarget: true,
+      logic: { required: '' },
+    })
   })
 
   it('serialises a question that merely has a forEachRow (rank/score) as a question, not a group', () => {
@@ -342,7 +360,7 @@ describe('buildFormContext (P1.5)', () => {
     surveyOf([nameless, err, target])
     chai
       .expect(buildFormContext(target).rows)
-      .to.deep.equal([{ kind: 'question', name: '', type: 'text', isTarget: true, logic: {} }])
+      .to.deep.equal([{ kind: 'question', name: '', type: 'text', isTarget: true, logic: { required: '' } }])
   })
 
   it('drops a throwing row, keeps its siblings, and warns', () => {

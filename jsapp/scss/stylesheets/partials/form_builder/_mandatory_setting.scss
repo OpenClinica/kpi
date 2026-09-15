@@ -41,6 +41,15 @@
     margin-top: 4px;
   }
 
+  &__status {
+    font-size: 12px;
+    color: colors.$kobo-gray-40;
+    background-color: colors.$kobo-gray-96;
+    border-radius: 2px;
+    padding: 6px 8px;
+    margin-bottom: 12px;
+  }
+
   &__hint {
     font-size: 12px;
     font-weight: normal;
