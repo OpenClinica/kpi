@@ -175,7 +175,8 @@ xlform_survey_model = ($model)->
       # true/false values
       expect(processed_required('true')).toEqual('true')
       expect(processed_required('TRUE')).toEqual('true')
-      expect(processed_required('yes')).toEqual('true')
+      # OC-28717: 'yes' is the canonical Always value — preserved as-is, not coerced to 'true'
+      expect(processed_required('yes')).toEqual('yes')
       expect(processed_required('YES')).toEqual('true')
       expect(processed_required(true)).toEqual('true')
 
@@ -186,7 +187,8 @@ xlform_survey_model = ($model)->
       expect(processed_required(false)).toEqual('false')
 
       expect(processed_required(`undefined`)).toEqual('false')
-      expect(processed_required('')).toEqual('false')
+      # OC-28717: '' is the canonical Never value — preserved as-is, toFlatJSON omits the field (blank required column)
+      expect(processed_required('')).toEqual(undefined)
 
   describe 'test start questions', ->
     beforeEach ->

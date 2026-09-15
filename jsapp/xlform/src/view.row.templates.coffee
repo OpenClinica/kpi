@@ -421,9 +421,20 @@ module.exports = do ->
 
   # NOTE: Textbox value is empty, as we set it in some other place to avoid
   # problems with double quotes.
-  mandatorySettingSelector = (uniqueName, currentValue, hideConditional = false) ->
-    if currentValue is 'true' or currentValue is 'false'
-      modifier = currentValue
+  mandatorySettingSelector = (uniqueName, currentValue, hideConditional = false, isConditional = false) ->
+    # OC-28717: canonical values are 'yes' (Always) and '' (Never).
+    # 'true'/'false' are the normalised-boolean stringifications that
+    # getChangedValue() returns for forms whose required column was parsed
+    # from an older XLSForm — treated as backward-compat aliases.
+    # isConditional overrides the model value when the instance is in
+    # Conditional mode: '' is ambiguous (Never vs. Conditional-no-expression),
+    # so the caller passes its flag to force the Conditional radio.
+    if isConditional
+      modifier = 'custom'
+    else if currentValue is 'yes' or currentValue is 'true'
+      modifier = 'yes'
+    else if currentValue is '' or currentValue is 'false'
+      modifier = ''
     else
       modifier = 'custom'
 
@@ -432,21 +443,21 @@ module.exports = do ->
       <label>#{t('Required')}:</label>
       <span class="settings__input">
         <div class="radio">
-          <label class="radio__row mandatory-setting__row mandatory-setting__row--true">
+          <label class="radio__row mandatory-setting__row mandatory-setting__row--yes">
             <input
               class="radio__input js-mandatory-setting-radio"
               type="radio"
               name="#{uniqueName}"
-              value="true" #{if modifier is 'true' then 'checked' else ''}
+              value="yes" #{if modifier is 'yes' then 'checked' else ''}
             >
             <span class="radio__label">#{t('Always')}</span>
           </label>
-          <label class="radio__row mandatory-setting__row mandatory-setting__row--false">
+          <label class="radio__row mandatory-setting__row mandatory-setting__row--never">
             <input
               class="radio__input js-mandatory-setting-radio"
               type="radio"
               name="#{uniqueName}"
-              value="false" #{if modifier is 'false' then 'checked' else ''}
+              value="" #{if modifier is '' then 'checked' else ''}
             >
             <span class="radio__label">#{t('Never')}</span>
           </label>

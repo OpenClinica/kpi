@@ -198,7 +198,9 @@ function buildQuestionRow(row: any, name: string, isTarget: boolean): QuestionRo
     ...(choices ? { choices } : {}),
     ...(isTarget ? { isTarget: true as const } : {}),
     logic: {
-      ...opt('required', readDetail(row, 'required')),
+      // '' is Never — must not be dropped by opt() like other empty fields.
+      // Always send required so the AI sees the full tri-state (OC-28717).
+      required: readDetail(row, 'required'),
       ...opt('relevant', readDetail(row, 'relevant')),
       ...opt('constraint', readDetail(row, 'constraint')),
       ...opt('constraintMessage', readDetail(row, 'constraint_message')),

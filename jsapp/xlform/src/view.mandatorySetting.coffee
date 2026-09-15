@@ -1,5 +1,6 @@
 _ = require 'underscore'
 Backbone = require 'backbone'
+alertify = require 'alertifyjs'
 $configs = require './model.configs'
 $baseView = require './view.pluggedIn.backboneView'
 $viewTemplates = require './view.templates'
@@ -22,23 +23,31 @@ module.exports = do ->
 
     render: ->
       reqVal = @getChangedValue()
-      # Sync the conditional flag with model state (handles undo/redo/external changes)
-      if reqVal is 'true' or reqVal is 'false'
+      # Sync the conditional flag with model state (handles undo/redo/external changes).
+      # OC-28717: canonical Always='yes', Never=''. 'true'/'false' are backward-compat
+      # stringifications of the boolean that inputParser normalises older XLSForms to.
+      # '' is intentionally excluded: it is ambiguous (Never vs. Conditional-no-expression),
+      # so we do not reset @isConditionalSelected for it — onRadioChange owns that flag.
+      if reqVal is 'yes' or reqVal is 'true' or reqVal is 'false'
         @isConditionalSelected = false
       else if @hideConditional
-        # Conditional option is hidden for this question type — force to 'false'
-        # so no radio is left in an unrepresentable selected state
-        @setNewValue('false')
-        reqVal = 'false'
+        # Conditional option is hidden for this question type — force to Never
+        # so no radio is left in an unrepresentable selected state.
+        # OC-28717: canonical Never is '' (not 'false') to keep the XLSForm
+        # required column blank, matching what AC2 specifies.
+        # Guard: setNewValue calls onChange on every invocation — only write
+        # when the value actually needs to change to avoid re-render loops.
+        @setNewValue('') unless reqVal is ''
+        reqVal = ''
         @isConditionalSelected = false
-      else
+      else if reqVal isnt ''
         @isConditionalSelected = true
-      template = $($viewTemplates.$$render("row.mandatorySettingSelector", "required_#{@model.cid}", reqVal, @hideConditional))
+      template = $($viewTemplates.$$render("row.mandatorySettingSelector", "required_#{@model.cid}", reqVal, @hideConditional, @isConditionalSelected))
       @$el.html(template)
       # Sync panel text input if it exists
       if @$panelEl
         panelInput = @$panelEl.find('.mandatory-setting-custom-text')
-        if reqVal isnt 'true' and reqVal isnt 'false'
+        if reqVal isnt 'yes' and reqVal isnt 'true' and reqVal isnt 'false' and reqVal isnt ''
           panelInput.val(reqVal)
         else
           panelInput.val('')
@@ -58,7 +67,7 @@ module.exports = do ->
       @_bindPanelEvents()
       # Populate panel input with existing value if conditional
       reqVal = @getChangedValue()
-      if reqVal isnt 'true' and reqVal isnt 'false'
+      if reqVal isnt 'yes' and reqVal isnt 'true' and reqVal isnt 'false' and reqVal isnt ''
         @$panelEl.find('.mandatory-setting-custom-text').val(reqVal)
       @_updateRequiredLogicTabVisibility()
       return
@@ -100,6 +109,32 @@ module.exports = do ->
         @$panelEl?.find('.mandatory-setting-custom-text').val('').focus()
         # Don't show the inline error message yet — only after user interaction
       else
+        # OC-28717 AC4: switching away from Conditional while an expression is
+        # present requires explicit confirmation — silently discarding the user's
+        # expression is too easy to trigger by accident.
+        if @isConditionalSelected
+          currentExpr = (@$panelEl?.find('.mandatory-setting-custom-text').val() or '').trim()
+          if currentExpr isnt ''
+            dialog = alertify.dialog('confirm')
+            dialog.set(
+              title: t('Discard Required expression?')
+              message: t('This will discard the current conditional Required expression. Continue?')
+              labels:
+                ok: t('Confirm')
+                cancel: t('Cancel')
+              onok: =>
+                @isConditionalSelected = false
+                @setNewValue(val)
+                @_hideRequiredLogicTab()
+                @hideMessage()
+                return
+              oncancel: =>
+                # Restore the radio to Conditional — browser already moved it.
+                @render()
+                dialog.destroy()
+                return
+            ).show()
+            return
         @isConditionalSelected = false
         @setNewValue(val)
         @_hideRequiredLogicTab()
@@ -132,15 +167,12 @@ module.exports = do ->
       return String(val)
 
     setNewValue: (val) ->
-      if @model.get('value') is true or @model.get('value') is false
-        if val isnt ''
-          @model.set('value', val)
-      else
-        @model.set('value', val)
-
+      # OC-28717: write unconditionally — the old boolean guard blocked '' (Never)
+      # from being written when the model held a normalised boolean false. Since
+      # the canonical Never value is now '' (empty string), that guard is wrong.
+      @model.set('value', val)
       if typeof @onChange is 'function'
         @onChange(val)
-
       return
 
     _showRequiredLogicTab: ->
@@ -158,7 +190,7 @@ module.exports = do ->
       isConditional = @isConditionalSelected
       if not isConditional
         reqVal = @getChangedValue()
-        isConditional = reqVal isnt 'true' and reqVal isnt 'false'
+        isConditional = reqVal isnt 'yes' and reqVal isnt 'true' and reqVal isnt 'false' and reqVal isnt ''
       $tab = @rowView.cardSettingsWrap.find('.js-required-logic-tab')
       $tab.toggle(isConditional)
       if isConditional
@@ -170,7 +202,7 @@ module.exports = do ->
       return unless @rowView
       requiredVal = @getChangedValue()
       normalizedRequiredVal = String(requiredVal or '').trim()
-      hasExpression = normalizedRequiredVal isnt '' and normalizedRequiredVal isnt 'true' and normalizedRequiredVal isnt 'false'
+      hasExpression = normalizedRequiredVal isnt '' and normalizedRequiredVal isnt 'yes' and normalizedRequiredVal isnt 'true' and normalizedRequiredVal isnt 'false'
       $errorIcon = @rowView.cardSettingsWrap.find('.js-required-logic-error')
       $errorIcon.toggle(not hasExpression)
 

@@ -124,10 +124,12 @@ export function applyExpressionToRow(row: any, attribute: string, expression: st
 }
 
 // Attributes whose stored value can be a state sentinel rather than an
-// expression: the Required toggle persists '' | true | false | 'true' |
-// 'false' for its simple states (mirrors view.mandatorySetting.coffee's own
-// hasExpression test). Only a real expression — or the XLSForm 'yes' the
-// bridge writes for Always — should trigger the overwrite confirmation.
+// expression: the Required tri-state selector (OC-28717) writes 'yes' (Always)
+// and '' (Never). '' is a sentinel — no expression, no confirmation. 'true' /
+// 'false' are backward-compat stringifications of the boolean that inputParser
+// normalises older XLSForms to — also sentinels. 'yes' is intentionally NOT a
+// sentinel: it represents the Always state, a deliberate choice worth confirming
+// before the AI generator overwrites it with a conditional expression.
 const REQUIRED_EMPTY_SENTINELS = new Set(['', 'true', 'false'])
 
 /**
