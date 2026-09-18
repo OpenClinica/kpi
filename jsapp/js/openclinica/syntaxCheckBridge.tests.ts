@@ -1,19 +1,36 @@
 import chai from 'chai'
 
-const mockCheckSyntax = jest.fn()
+// The detailed checker is the one source of truth; the message-only variant
+// derives from it exactly as the real module does.
+const mockCheckSyntaxDetailed = jest.fn()
 jest.mock('./checkSyntax', () => ({
   __esModule: true,
-  checkSyntax: (...args: unknown[]) => mockCheckSyntax(...args),
+  checkSyntaxDetailed: (...args: unknown[]) => mockCheckSyntaxDetailed(...args),
+  checkSyntax: (...args: unknown[]) =>
+    (mockCheckSyntaxDetailed(...args) as Array<{ message: string }>).map((e) => e.message),
 }))
 jest.mock('./logicBuilderContext', () => ({
   __esModule: true,
   buildFormContext: jest.fn(() => ({ rows: [] })),
+  readItemName: jest.fn(() => 'BMI'),
+}))
+const mockEmitSyntaxVerdict = jest.fn()
+const mockForgetSyntaxVerdict = jest.fn()
+jest.mock('./logicBuilderAnalytics', () => ({
+  __esModule: true,
+  emitSyntaxVerdict: (...args: unknown[]) => mockEmitSyntaxVerdict(...args),
+  forgetSyntaxVerdict: (...args: unknown[]) => mockForgetSyntaxVerdict(...args),
 }))
 
 import { buildFormContext } from './logicBuilderContext'
 import { findSyntaxCheckAnchor, runSyntaxCheck } from './syntaxCheckBridge'
 
 const mockBuildFormContext = buildFormContext as jest.Mock
+
+/** Detailed-checker return for tests that only care about the rendered messages. */
+function errors(...messages: string[]) {
+  return messages.map((message) => ({ category: 'paren', message }))
+}
 
 function makeRow(value: string) {
   return {
@@ -33,13 +50,15 @@ function makeFacadeRow(rawSeed: string, liveValue: string) {
 
 describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
   beforeEach(() => {
-    mockCheckSyntax.mockReset()
+    mockCheckSyntaxDetailed.mockReset()
+    mockEmitSyntaxVerdict.mockReset()
+    mockForgetSyntaxVerdict.mockReset()
     mockBuildFormContext.mockClear()
     document.body.innerHTML = ''
   })
 
   it('renders one message beneath the anchor for one detected error', () => {
-    mockCheckSyntax.mockReturnValue(['Missing closing parenthesis'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('Missing closing parenthesis'))
     const anchor = document.createElement('textarea')
     document.body.appendChild(anchor)
 
@@ -51,7 +70,7 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
   })
 
   it('renders every message in order when several errors are detected (AC3)', () => {
-    mockCheckSyntax.mockReturnValue(['first error', 'second error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('first error', 'second error'))
     const anchor = document.createElement('textarea')
     document.body.appendChild(anchor)
 
@@ -65,10 +84,10 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
     const anchor = document.createElement('textarea')
     document.body.appendChild(anchor)
 
-    mockCheckSyntax.mockReturnValue(['stale error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('stale error'))
     runSyntaxCheck(makeRow('bad'), 'calculation', anchor)
 
-    mockCheckSyntax.mockReturnValue(['fresh error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('fresh error'))
     runSyntaxCheck(makeRow('bad'), 'calculation', anchor)
 
     const messages = [...document.body.querySelectorAll('.js-syntax-check-message')].map((el) => el.textContent)
@@ -79,17 +98,17 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
     const anchor = document.createElement('textarea')
     document.body.appendChild(anchor)
 
-    mockCheckSyntax.mockReturnValue(['an error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('an error'))
     runSyntaxCheck(makeRow('bad'), 'calculation', anchor)
 
-    mockCheckSyntax.mockReturnValue([])
+    mockCheckSyntaxDetailed.mockReturnValue([])
     runSyntaxCheck(makeRow('fixed'), 'calculation', anchor)
 
     chai.expect(document.body.querySelectorAll('.js-syntax-check-message').length).to.equal(0)
   })
 
   it('does not throw and renders nothing when the anchor is null (panel not rendered)', () => {
-    mockCheckSyntax.mockReturnValue(['an error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('an error'))
     chai.expect(() => runSyntaxCheck(makeRow('bad'), 'calculation', null)).to.not.throw()
     chai.expect(document.body.querySelectorAll('.js-syntax-check-message').length).to.equal(0)
   })
@@ -101,7 +120,7 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
     runSyntaxCheck(makeRow(''), 'calculation', anchor)
 
     chai.expect(mockBuildFormContext.mock.calls.length).to.equal(0)
-    chai.expect(mockCheckSyntax.mock.calls.length).to.equal(0)
+    chai.expect(mockCheckSyntaxDetailed.mock.calls.length).to.equal(0)
     chai.expect(document.body.querySelectorAll('.js-syntax-check-message').length).to.equal(0)
   })
 
@@ -109,7 +128,7 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
     const anchor = document.createElement('textarea')
     document.body.appendChild(anchor)
 
-    mockCheckSyntax.mockReturnValue(['an error'])
+    mockCheckSyntaxDetailed.mockReturnValue(errors('an error'))
     runSyntaxCheck(makeRow('bad'), 'calculation', anchor)
 
     runSyntaxCheck(makeRow(''), 'calculation', anchor)
@@ -121,14 +140,84 @@ describe('runSyntaxCheck (P1.11 AC1, AC3)', () => {
     // Hand-code typing never writes the raw stored value back (only Apply
     // does) — checking raw here would validate what the user typed BEFORE
     // this edit, not what's actually in the field now.
-    mockCheckSyntax.mockReturnValue([])
+    mockCheckSyntaxDetailed.mockReturnValue([])
     const row = makeFacadeRow('${a} = 1', '${a} = (1')
     const anchor = document.createElement('div')
     document.body.appendChild(anchor)
 
     runSyntaxCheck(row, 'relevant', anchor)
 
-    chai.expect(mockCheckSyntax.mock.calls[0][0]).to.equal('${a} = (1')
+    chai.expect(mockCheckSyntaxDetailed.mock.calls[0][0]).to.equal('${a} = (1')
+  })
+})
+
+describe('runSyntaxCheck analytics (P1.13 AC1, AC2)', () => {
+  beforeEach(() => {
+    mockCheckSyntaxDetailed.mockReset()
+    mockEmitSyntaxVerdict.mockReset()
+    mockForgetSyntaxVerdict.mockReset()
+    document.body.innerHTML = ''
+  })
+
+  it('emits the verdict with the item name, the ExpressionTab, the expression and the categories', () => {
+    mockCheckSyntaxDetailed.mockReturnValue([
+      { category: 'paren', message: 'p' },
+      { category: 'unknown_item', message: 'u' },
+    ])
+    const anchor = document.createElement('textarea')
+    document.body.appendChild(anchor)
+
+    runSyntaxCheck(makeRow('(${HIEGHT}'), 'calculation', anchor)
+
+    chai
+      .expect(mockEmitSyntaxVerdict.mock.calls)
+      .to.deep.equal([
+        [
+          {
+            itemName: 'BMI',
+            attribute: 'calculation',
+            expression: '(${HIEGHT}',
+            categories: ['paren', 'unknown_item'],
+          },
+        ],
+      ])
+  })
+
+  it('maps the xlform column to the ExpressionTab vocabulary and passes the after-Apply marker through', () => {
+    mockCheckSyntaxDetailed.mockReturnValue([])
+    const row = {
+      get: (attribute: string) =>
+        attribute === 'repeat_count' ? { get: (k: string) => (k === 'value' ? '3' : undefined) } : undefined,
+    }
+    const anchor = document.createElement('input')
+    document.body.appendChild(anchor)
+
+    runSyntaxCheck(row, 'repeat_count', anchor, { afterAiApply: true, generationId: 'g1' })
+
+    chai.expect(mockEmitSyntaxVerdict.mock.calls[0][0]).to.deep.equal({
+      itemName: 'BMI',
+      attribute: 'repeatCount',
+      expression: '3',
+      categories: [],
+      afterAiApply: { generationId: 'g1' },
+    })
+  })
+
+  it('emits nothing for an empty expression but forgets the entry so retyping counts again', () => {
+    const anchor = document.createElement('textarea')
+    document.body.appendChild(anchor)
+
+    runSyntaxCheck(makeRow(''), 'calculation', anchor)
+
+    chai.expect(mockEmitSyntaxVerdict.mock.calls.length).to.equal(0)
+    chai.expect(mockForgetSyntaxVerdict.mock.calls).to.deep.equal([['BMI', 'calculation']])
+  })
+
+  it('emits nothing when the anchor is null (no check ran)', () => {
+    mockCheckSyntaxDetailed.mockReturnValue([])
+    runSyntaxCheck(makeRow('${A}'), 'calculation', null)
+    chai.expect(mockEmitSyntaxVerdict.mock.calls.length).to.equal(0)
+    chai.expect(mockCheckSyntaxDetailed.mock.calls.length).to.equal(0)
   })
 })
 

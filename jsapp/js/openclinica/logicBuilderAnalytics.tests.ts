@@ -10,8 +10,12 @@ import type { FailureReason, GenerateClient, GenerationRequest, GenerationResult
 import {
   type GenerateRequestEvent,
   LOGIC_BUILDER_EVENTS,
+  type SyntaxVerdictEvent,
   clearGenerationLedger,
+  clearSyntaxVerdictMemory,
   emitGenerateApply,
+  emitSyntaxVerdict,
+  forgetSyntaxVerdict,
   latencyBucket,
   newGenerationId,
   recordGeneration,
@@ -23,6 +27,7 @@ describe('LOGIC_BUILDER_EVENTS (P1.12)', () => {
     chai.expect(LOGIC_BUILDER_EVENTS).to.deep.equal({
       generateRequest: 'logic_builder.generate.request',
       generateApply: 'logic_builder.generate.apply',
+      syntaxVerdict: 'logic_builder.syntax.verdict',
     })
   })
 })
@@ -307,3 +312,109 @@ describe('withGenerationAnalytics (P1.12 AC1 request event, AC4 never alters the
     chai.expect(inner.generate.mock.calls).to.deep.equal([[req, { signal: controller.signal }]])
   })
 })
+
+describe('emitSyntaxVerdict (P1.13 AC1–AC3)', () => {
+  const bmi = { itemName: 'BMI', attribute: 'calculation' as const }
+
+  beforeEach(() => {
+    mockTrack.mockReset()
+    clearSyntaxVerdictMemory()
+  })
+
+  it('emits a valid verdict with exactly the whitelisted keys and no expression text', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${WEIGHT} div ${HEIGHT}', categories: [] })
+    chai.expect(mockTrack.mock.calls.length).to.equal(1)
+    const [name, payload] = mockTrack.mock.calls[0] as [string, SyntaxVerdictEvent]
+    chai.expect(name).to.equal(LOGIC_BUILDER_EVENTS.syntaxVerdict)
+    chai
+      .expect(Object.keys(payload).sort())
+      .to.deep.equal([
+        'afterAiApply',
+        'attribute',
+        'errorCategories',
+        'errorCount',
+        'generationId',
+        'itemName',
+        'verdict',
+      ])
+    chai.expect(payload).to.deep.equal({
+      attribute: 'calculation',
+      itemName: 'BMI',
+      verdict: 'valid',
+      errorCategories: '',
+      errorCount: 0,
+      afterAiApply: false,
+      generationId: null,
+    })
+    chai.expect(JSON.stringify(payload)).to.not.include('WEIGHT')
+  })
+
+  it('emits an invalid verdict with the categories joined and counted', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '(${HIEGHT}', categories: ['paren', 'unknown_item'] })
+    chai.expect(mockTrack.mock.calls[0][1]).to.include({
+      verdict: 'invalid',
+      errorCategories: 'paren|unknown_item',
+      errorCount: 2,
+      afterAiApply: false,
+    })
+  })
+
+  it('does not emit again for an unchanged expression on the same item and attribute', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    chai.expect(mockTrack.mock.calls.length).to.equal(1)
+  })
+
+  it('emits again when the expression changes, and tracks each attribute separately', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    emitSyntaxVerdict({ ...bmi, expression: '${A} + 1', categories: [] })
+    emitSyntaxVerdict({ itemName: 'BMI', attribute: 'default', expression: '${A}', categories: [] })
+    chai.expect(mockTrack.mock.calls.length).to.equal(3)
+  })
+
+  it('always emits a post-Apply verdict, marks it, carries the generation id, and then dedupes the following blur', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [], afterAiApply: { generationId: 'g1' } })
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    chai.expect(mockTrack.mock.calls.length).to.equal(2)
+    chai.expect(mockTrack.mock.calls[1][1]).to.include({ afterAiApply: true, generationId: 'g1', verdict: 'valid' })
+  })
+
+  it('marks a post-Apply verdict with a null generation id when the ledger missed', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [], afterAiApply: {} })
+    chai.expect(mockTrack.mock.calls[0][1]).to.include({ afterAiApply: true, generationId: null })
+  })
+
+  it('emits again after the memory is cleared or one entry is forgotten', () => {
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    forgetSyntaxVerdict('BMI', 'calculation')
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    clearSyntaxVerdictMemory()
+    emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })
+    chai.expect(mockTrack.mock.calls.length).to.equal(3)
+  })
+
+  it('never throws when the tracker throws', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {})
+    mockTrack.mockImplementation(() => {
+      throw new Error('sdk down')
+    })
+    chai.expect(() => emitSyntaxVerdict({ ...bmi, expression: '${A}', categories: [] })).to.not.throw()
+    chai.expect(warn.mock.calls.length).to.equal(1)
+    warn.mockRestore()
+  })
+})
+
+// AC3 at compile time: the verdict payload has no room for expression or message text.
+const forbiddenVerdict: SyntaxVerdictEvent = {
+  attribute: 'calculation',
+  itemName: 'BMI',
+  verdict: 'valid',
+  errorCategories: '',
+  errorCount: 0,
+  afterAiApply: false,
+  generationId: null,
+  // @ts-expect-error — `expression` is not a permitted SyntaxVerdictEvent key
+  expression: 'never',
+}
+void forbiddenVerdict

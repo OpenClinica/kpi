@@ -60,7 +60,7 @@ import {
   readCurrentExpression,
 } from '#/openclinica/applyExpression'
 import { unmountAll } from '#/openclinica/generateButtonBridge'
-import { clearGenerationLedger, emitGenerateApply } from '#/openclinica/logicBuilderAnalytics'
+import { clearGenerationLedger, clearSyntaxVerdictMemory, emitGenerateApply } from '#/openclinica/logicBuilderAnalytics'
 import { logicBuilderClient } from '#/openclinica/logicBuilderClient'
 import { buildFormContext, readItemName } from '#/openclinica/logicBuilderContext'
 import { GENERATE_REQUEST_KEY, columnToTab } from '#/openclinica/logicBuilderTabs'
@@ -330,6 +330,8 @@ export default function EditableForm(props: EditableFormProps) {
       stores.surveyState.setState({ [GENERATE_REQUEST_KEY]: null })
       // P1.12: no dialog, no applicable generation.
       clearGenerationLedger()
+      // P1.13: the form is closing — verdict dedupe memory is per form session.
+      clearSyntaxVerdictMemory()
     }
   }, [])
 
@@ -389,9 +391,15 @@ export default function EditableForm(props: EditableFormProps) {
   // close which way to send focus: a successful Apply → the panel's expression
   // field; a dismiss (×/Escape) → the panel's Generate button.
   const closingViaApplyRef = useRef(false)
+  // P1.13 AC2: the generation id the Apply event carried, so the post-Apply
+  // syntax verdict can be stamped with it. Set by applyGeneratedExpression,
+  // consumed once by the close that follows.
+  const appliedGenerationIdRef = useRef<string | undefined>(undefined)
   function closeGenerateDialog() {
     const wasApply = closingViaApplyRef.current
     closingViaApplyRef.current = false
+    const appliedGenerationId = appliedGenerationIdRef.current
+    appliedGenerationIdRef.current = undefined
     const request = state[GENERATE_REQUEST_KEY]
     const attribute = request?.attribute
     const row = request?.row
@@ -411,8 +419,12 @@ export default function EditableForm(props: EditableFormProps) {
     window.setTimeout(() => {
       if (wasApply) {
         focusPanelInput(attribute, root) // P1.3 AC4
-        // P1.11 AC1: instant syntax check right after an applied expression.
-        runSyntaxCheck(row, attribute, findSyntaxCheckAnchor(attribute, root))
+        // P1.11 AC1: instant syntax check right after an applied expression —
+        // P1.13 AC2: marked as following an AI Apply and stamped with its id.
+        runSyntaxCheck(row, attribute, findSyntaxCheckAnchor(attribute, root), {
+          afterAiApply: true,
+          ...(appliedGenerationId ? { generationId: appliedGenerationId } : {}),
+        })
       } else {
         focusGenerateButton(attribute, root) // P1.1 AC6
       }
@@ -444,7 +456,11 @@ export default function EditableForm(props: EditableFormProps) {
       // before the dialog can ever render — so this is defence in depth and
       // unreachable in practice, never a silent drop of a real apply event.
       if (tab) {
-        emitGenerateApply({ itemName: readItemName(request.row), attribute: tab, expression })
+        appliedGenerationIdRef.current = emitGenerateApply({
+          itemName: readItemName(request.row),
+          attribute: tab,
+          expression,
+        })
       }
       // Persisted. Flag the focus target for the package-driven close (the
       // panel's expression field, not the Generate button) and report success.

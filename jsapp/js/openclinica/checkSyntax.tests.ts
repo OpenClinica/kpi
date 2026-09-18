@@ -1,6 +1,6 @@
 import chai from 'chai'
 
-import { type SyntaxCheckFormContext, checkSyntax } from './checkSyntax'
+import { type SyntaxCheckFormContext, checkSyntax, checkSyntaxDetailed } from './checkSyntax'
 
 const MISSING_OPEN_PAREN =
   'Missing opening parenthesis "(" for existing closing parenthesis ")". Parentheses must be used in pairs in logical groupings and function calls.'
@@ -114,5 +114,31 @@ describe('checkSyntax (P1.11 AC4-AC8)', () => {
 
   it('displays multiple distinct error conditions together (AC3)', () => {
     chai.expect(checkSyntax('(${HIEGHT}', bmiForm)).to.deep.equal([MISSING_CLOSE_PAREN, invalidItemRef('HIEGHT')])
+  })
+})
+
+describe('checkSyntaxDetailed (P1.13 AC1 error categories)', () => {
+  it('returns no errors for a valid expression', () => {
+    chai.expect(checkSyntaxDetailed('${WEIGHT} div (${HEIGHT} * ${HEIGHT})', bmiForm)).to.deep.equal([])
+  })
+
+  it('tags each condition with its category and keeps the P1.11 message', () => {
+    chai.expect(checkSyntaxDetailed('(${A}', emptyForm)).to.deep.equal([{ category: 'paren', message: MISSING_CLOSE_PAREN }])
+    chai
+      .expect(checkSyntaxDetailed('position()=1]', emptyForm))
+      .to.deep.equal([{ category: 'bracket', message: MISSING_OPEN_BRACKET }])
+    chai
+      .expect(checkSyntaxDetailed("${STATUS} = 'active", emptyForm))
+      .to.deep.equal([{ category: 'string', message: MISSING_SINGLE_QUOTE }])
+    chai.expect(checkSyntaxDetailed('${WEIGHT', bmiForm)).to.deep.equal([{ category: 'brace', message: MISSING_CLOSE_BRACE }])
+    chai
+      .expect(checkSyntaxDetailed('${HIEGHT}', bmiForm))
+      .to.deep.equal([{ category: 'unknown_item', message: invalidItemRef('HIEGHT') }])
+  })
+
+  it('reports every detected condition, in the same order as checkSyntax', () => {
+    const detailed = checkSyntaxDetailed('(${HIEGHT}', bmiForm)
+    chai.expect(detailed.map((e) => e.category)).to.deep.equal(['paren', 'unknown_item'])
+    chai.expect(detailed.map((e) => e.message)).to.deep.equal([...checkSyntax('(${HIEGHT}', bmiForm)])
   })
 })

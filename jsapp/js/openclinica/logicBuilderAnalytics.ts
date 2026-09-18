@@ -20,11 +20,13 @@ import type {
   GenerationResult,
 } from '@openclinica/logic-builder'
 import userpilot from '#/userpilot'
+import type { SyntaxErrorCategory } from './checkSyntax'
 
 /** Event names are permanent in UserPilot (archive only) — agreed before the first production send. */
 export const LOGIC_BUILDER_EVENTS = {
   generateRequest: 'logic_builder.generate.request',
   generateApply: 'logic_builder.generate.apply',
+  syntaxVerdict: 'logic_builder.syntax.verdict',
 } as const
 
 export type LatencyBucket = '<1s' | '1-2s' | '2-3s' | '3-5s' | '5-10s' | '>10s'
@@ -258,5 +260,83 @@ export function withGenerationAnalytics(inner: GenerateClient): GenerateClient {
       })
       return result
     },
+  }
+}
+
+// ---------------------------------------------------------------------------
+// P1.13 — instant syntax-check verdicts (OC-28782)
+// ---------------------------------------------------------------------------
+
+// AC3 whitelist, enforced by type (a type alias for the same reason as the
+// P1.12 events). Every key is always present so the shape is one object, not
+// a union: `errorCategories` is '' and `generationId` is null when they do
+// not apply — null is a UserPilot primitive, and a constant key set keeps the
+// dashboard's attribute list stable.
+export type SyntaxVerdictEvent = {
+  readonly attribute: ExpressionTab
+  readonly itemName: string
+  readonly verdict: 'valid' | 'invalid'
+  readonly errorCategories: string // '|'-joined SyntaxErrorCategory list, '' when valid
+  readonly errorCount: number
+  readonly afterAiApply: boolean
+  readonly generationId: string | null // only after an AI Apply, when the ledger matched
+}
+
+export interface SyntaxVerdictInput {
+  readonly itemName: string
+  readonly attribute: ExpressionTab
+  /** The checked expression — used ONLY to suppress repeat verdicts; never emitted. */
+  readonly expression: string
+  readonly categories: readonly SyntaxErrorCategory[]
+  /** Present when the check follows an AI Apply (P1.13 AC2); forces emission. */
+  readonly afterAiApply?: { readonly generationId?: string }
+}
+
+// The last expression a verdict was emitted for, per item + attribute. A blur
+// that re-checks unchanged text emits nothing (PRD P1.13 AC1, 2026-09-18), so a
+// verdict counts a distinct authored state, not a focus change. Expression text
+// lives here only; it never enters a payload.
+const lastVerdictExpression = new Map<string, string>()
+
+function verdictKey(itemName: string, attribute: ExpressionTab): string {
+  return `${itemName}\u0000${attribute}`
+}
+
+/** Forget one item+attribute, e.g. when its expression was cleared, so retyping the same text counts again. */
+export function forgetSyntaxVerdict(itemName: string, attribute: ExpressionTab): void {
+  lastVerdictExpression.delete(verdictKey(itemName, attribute))
+}
+
+/** Called when the form is closed. */
+export function clearSyntaxVerdictMemory(): void {
+  lastVerdictExpression.clear()
+}
+
+/**
+ * Emit the verdict of one instant syntax check (AC1), unless the expression is
+ * unchanged since the last verdict for this item and attribute. A post-Apply
+ * check always emits, marked and stamped with the applied generation's id
+ * (AC2), and resets the memory so the blur that usually follows Apply is
+ * silent. Fire-and-forget and guarded (AC3).
+ */
+export function emitSyntaxVerdict(input: SyntaxVerdictInput): void {
+  try {
+    const key = verdictKey(input.itemName, input.attribute)
+    if (!input.afterAiApply && lastVerdictExpression.get(key) === input.expression) {
+      return
+    }
+    lastVerdictExpression.set(key, input.expression)
+    const event: SyntaxVerdictEvent = {
+      attribute: input.attribute,
+      itemName: input.itemName,
+      verdict: input.categories.length === 0 ? 'valid' : 'invalid',
+      errorCategories: input.categories.join('|'),
+      errorCount: input.categories.length,
+      afterAiApply: input.afterAiApply !== undefined,
+      generationId: input.afterAiApply?.generationId ?? null,
+    }
+    userpilot.track(LOGIC_BUILDER_EVENTS.syntaxVerdict, event)
+  } catch (e) {
+    warn('syntax verdict emission failed', e)
   }
 }

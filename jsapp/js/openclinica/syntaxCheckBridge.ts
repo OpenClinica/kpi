@@ -4,8 +4,10 @@
  * Advisory only (AC2) — this never touches Save.
  */
 import { FACADE_ATTRIBUTES, findPanelInputElement, readCurrentExpression } from './applyExpression'
-import { checkSyntax } from './checkSyntax'
-import { buildFormContext } from './logicBuilderContext'
+import { checkSyntaxDetailed } from './checkSyntax'
+import { emitSyntaxVerdict, forgetSyntaxVerdict } from './logicBuilderAnalytics'
+import { buildFormContext, readItemName } from './logicBuilderContext'
+import { columnToTab } from './logicBuilderTabs'
 
 export const SYNTAX_CHECK_MESSAGE_CLASS = 'js-syntax-check-message'
 
@@ -63,23 +65,58 @@ function readExpressionToCheck(row: any, attribute: string): string {
   return readCurrentExpression(row, attribute)
 }
 
+/** P1.13 AC2: set by the host when the check follows an Apply from the AI Assistant. */
+export interface SyntaxCheckAnalytics {
+  readonly afterAiApply: true
+  /** The applied proposal's generation id (from emitGenerateApply); absent on a ledger miss. */
+  readonly generationId?: string
+}
+
 /**
  * Runs the check for (row, attribute) and (re-)renders its verdict right
  * after `anchor`. A re-check always replaces whatever it rendered last time;
  * no messages removes the block entirely. No-ops when `anchor` is null (the
  * panel isn't currently rendered).
+ *
+ * P1.13: every check that runs also reports its verdict to analytics — the
+ * emitter suppresses a verdict for an expression unchanged since its last one,
+ * except after an AI Apply, which `analytics` marks. Rendering never depends
+ * on emission (the emitter is guarded and fire-and-forget).
  */
-export function runSyntaxCheck(row: any, attribute: string, anchor: Element | null): void {
+export function runSyntaxCheck(
+  row: any,
+  attribute: string,
+  anchor: Element | null,
+  analytics?: SyntaxCheckAnalytics,
+): void {
   if (!anchor) {
     return
   }
   const expression = readExpressionToCheck(row, attribute)
+  const tab = columnToTab(attribute)
   if (!expression.trim()) {
     // An empty expression never has anything to flag — skip the whole-form
     // walk buildFormContext does, which is wasted work on every blur/apply.
     renderMessages(anchor, [])
+    // A cleared field is not an authored expression, so no verdict — but
+    // retyping the same text later is a new authored state and should count.
+    if (tab) forgetSyntaxVerdict(readItemName(row), tab)
     return
   }
-  const messages = checkSyntax(expression, buildFormContext(row))
-  renderMessages(anchor, messages)
+  const errors = checkSyntaxDetailed(expression, buildFormContext(row))
+  renderMessages(
+    anchor,
+    errors.map((error) => error.message),
+  )
+  if (tab) {
+    emitSyntaxVerdict({
+      itemName: readItemName(row),
+      attribute: tab,
+      expression,
+      categories: errors.map((error) => error.category),
+      ...(analytics
+        ? { afterAiApply: { ...(analytics.generationId ? { generationId: analytics.generationId } : {}) } }
+        : {}),
+    })
+  }
 }

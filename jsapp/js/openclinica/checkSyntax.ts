@@ -55,7 +55,20 @@ class Balance {
   }
 }
 
-export function checkSyntax(expression: string, form: SyntaxCheckFormContext): readonly string[] {
+/** P1.13: the five P1.11 conditions as stable analytics categories (never the message text). */
+export type SyntaxErrorCategory = 'paren' | 'bracket' | 'brace' | 'string' | 'unknown_item'
+
+export interface SyntaxCheckError {
+  readonly category: SyntaxErrorCategory
+  readonly message: string
+}
+
+/**
+ * The P1.11 check with each detected condition tagged by category, in the
+ * same order `checkSyntax` reports its messages. The bridge renders the
+ * messages and the P1.13 analytics event carries only the categories.
+ */
+export function checkSyntaxDetailed(expression: string, form: SyntaxCheckFormContext): readonly SyntaxCheckError[] {
   const parens = new Balance()
   const brackets = new Balance()
   const braces = new Balance()
@@ -121,26 +134,39 @@ export function checkSyntax(expression: string, form: SyntaxCheckFormContext): r
     }
   }
 
-  const messages: string[] = [
-    ...parens.messages(MISSING_OPEN_PAREN, MISSING_CLOSE_PAREN),
-    ...brackets.messages(MISSING_OPEN_BRACKET, MISSING_CLOSE_BRACKET),
+  const tagged = (category: SyntaxErrorCategory, msgs: readonly string[]): SyntaxCheckError[] =>
+    msgs.map((message) => ({ category, message }))
+
+  const errors: SyntaxCheckError[] = [
+    ...tagged('paren', parens.messages(MISSING_OPEN_PAREN, MISSING_CLOSE_PAREN)),
+    ...tagged('bracket', brackets.messages(MISSING_OPEN_BRACKET, MISSING_CLOSE_BRACKET)),
   ]
   if (quote === "'") {
-    messages.push(
-      "Missing ' for text value. Literal text values must either start and end with a single quote character (') or start and end with a double quote character (\").",
-    )
+    errors.push({
+      category: 'string',
+      message:
+        "Missing ' for text value. Literal text values must either start and end with a single quote character (') or start and end with a double quote character (\").",
+    })
   }
   if (quote === '"') {
-    messages.push(
-      'Missing " for text value. Literal text values must either start and end with a double quote character (") or start and end with a single quote character (\').',
-    )
+    errors.push({
+      category: 'string',
+      message:
+        'Missing " for text value. Literal text values must either start and end with a double quote character (") or start and end with a single quote character (\').',
+    })
   }
-  messages.push(...braces.messages(MISSING_OPEN_BRACE, MISSING_CLOSE_BRACE))
+  errors.push(...tagged('brace', braces.messages(MISSING_OPEN_BRACE, MISSING_CLOSE_BRACE)))
   for (const name of invalidRefs) {
-    messages.push(
-      `Invalid item reference \${${name}}. There is no item on this form with item name defined as ${name}.`,
-    )
+    errors.push({
+      category: 'unknown_item',
+      message: `Invalid item reference \${${name}}. There is no item on this form with item name defined as ${name}.`,
+    })
   }
 
-  return messages
+  return errors
+}
+
+/** P1.11: the detected conditions' messages, for rendering beneath the expression field. */
+export function checkSyntax(expression: string, form: SyntaxCheckFormContext): readonly string[] {
+  return checkSyntaxDetailed(expression, form).map((error) => error.message)
 }
