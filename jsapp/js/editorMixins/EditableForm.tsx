@@ -386,6 +386,9 @@ export default function EditableForm(props: EditableFormProps) {
   // close which way to send focus: a successful Apply → the panel's expression
   // field; a dismiss (×/Escape) → the panel's Generate button.
   const closingViaApplyRef = useRef(false)
+  // P1.14: session store for last-submitted prompts, keyed by "itemName::attribute".
+  // A plain ref (not state) so updates never trigger a re-render.
+  const promptSessionRef = useRef<Map<string, string>>(new Map())
   function closeGenerateDialog() {
     const wasApply = closingViaApplyRef.current
     closingViaApplyRef.current = false
@@ -528,6 +531,9 @@ export default function EditableForm(props: EditableFormProps) {
           // drives the dialog's inline overwrite confirmation.
           getCurrentExpression={() => readCurrentExpression(request.row, request.attribute)}
           onClose={closeGenerateDialog}
+          // P1.14 AC1/AC2: restore last submitted prompt for this (item, attribute).
+          initialPrompt={promptSessionRef.current.get(`${itemName}::${tab}`) ?? ''}
+          onPromptSubmit={(p) => promptSessionRef.current.set(`${itemName}::${tab}`, p)}
         />
       </LogicBuilderErrorBoundary>
     )
