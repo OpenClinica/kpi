@@ -130,6 +130,9 @@ export interface AiGeneratorDialogProps {
   // P1.3 AC2 — live editor read driving the inline overwrite confirmation.
   readonly getCurrentExpression: () => string
   readonly onClose: () => void
+  // P1.14 — last-prompt session recall.
+  readonly initialPrompt?: string
+  readonly onPromptSubmit?: (prompt: string) => void
 }
 
 export function AiGeneratorDialog(_props: AiGeneratorDialogProps): JSX.Element | null {
