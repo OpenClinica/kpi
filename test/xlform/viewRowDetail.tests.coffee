@@ -1910,3 +1910,46 @@ do ->
       @mixin_ctx.html()
       placeholder = @mixin_ctx.$el.find('input.repeat-count-panel__input').attr('placeholder')
       expect(placeholder).toBe('No repeat count yet — type one, or use the AI Assistant.')
+
+  ###############################################################
+  # oc_external — a consent item must not be designated for the user
+  # (OC-28658)
+  ###############################################################
+  describe 'view.rowDetail.DetailViewMixins: "oc_external" afterRender (OC-28658)', ->
+    beforeEach ->
+      window.xlfHideWarnings = true
+      @viewRowDetail = require('../../jsapp/xlform/src/view.rowDetail')
+      $model = require('../../jsapp/xlform/src/_model')
+      @survey = new $model.Survey()
+      @survey.rows.add(type: 'select_multiple consent_list', name: 'consent_q', label: 'Consent')
+      @row = @survey.rows.at(0)
+      # A consent item is a select_multiple whose choice list holds exactly one
+      # option named '1'. Stubbed here so these tests cover the designation
+      # behaviour rather than the predicate.
+      @row.isConsentItem = -> true
+      @detail = @row.get('bind::oc:external')
+      @$el = $('<div><select><option value="No">No</option><option value="signature">signature</option></select></div>')
+      @mixin_ctx = $.extend({}, @viewRowDetail.DetailViewMixins.oc_external, {
+        cid: 'cid_oc_external'
+        $el: @$el
+        $: (sel) => @$el.find(sel)
+        model: @detail
+        rowView: { model: @row }
+        Templates: @viewRowDetail.Templates
+      })
+    afterEach ->
+      window.xlfHideWarnings = false
+
+    it 'does not write bind::oc:external for a consent item with no saved value', ->
+      @mixin_ctx.afterRender()
+      expect(@detail.get('value')).toBe('')
+
+    it 'leaves the dropdown on No for a consent item with no saved value', ->
+      @mixin_ctx.afterRender()
+      expect(@$el.find('select').val()).toBe('No')
+
+    it 'keeps an already designated signature item on signature', ->
+      @detail.set('value', 'signature')
+      @mixin_ctx.afterRender()
+      expect(@$el.find('select').val()).toBe('signature')
+      expect(@detail.get('value')).toBe('signature')

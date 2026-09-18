@@ -2465,12 +2465,10 @@ module.exports = do ->
 
       if $select.length > 0
         if modelValue == ''
-          if @model._parent.isConsentItem()
-            $select.val('signature')
-            @model.set 'value', $select.val()
-            @showSignatureMessage()
-          else
-            $select.val('No')
+          # A consent-shaped item with no bind::oc:external saved is not a
+          # signature. Opening its settings must not select or write the value
+          # on its behalf, so it starts at No like any other select_multiple.
+          $select.val('No')
         else
           $select.val(modelValue)
           Backbone.trigger('ocCustomEvent', { sender: @model, value: modelValue })
