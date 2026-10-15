@@ -266,7 +266,7 @@ class LibrarySidebar extends Reflux.Component<any, any> {
                   {subdomainLibraryStore.getCollectionUid() === collection.uid && (
                     <PopoverMenu
                       type='collectionSidebarPublic-menu'
-                      triggerLabel={<i className='k-icon-more' />}
+                      triggerLabel={<i className='k-icon-more' aria-hidden />}
                       triggerAriaLabel={t('Collection actions')}
                     >
                       <bem.PopoverMenu__link

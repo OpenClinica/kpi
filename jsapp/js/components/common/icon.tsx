@@ -26,6 +26,13 @@ interface IconProps {
    * parent component (e.g. Button).
    */
   color?: IconColor
+  /**
+   * Accessible name. Set it only when the icon carries meaning that the
+   * surrounding text does not. Without it the icon is hidden from assistive
+   * technology. Leave it unset for an icon that is the only content of a button
+   * or link: the parent control supplies the name.
+   */
+  label?: string
 }
 
 /**
@@ -47,5 +54,10 @@ export default function Icon(props: IconProps) {
   classNames.push('k-icon')
   classNames.push(`k-icon-${props.name}`)
 
-  return <i className={classNames.join(' ')} />
+  if (props.label) {
+    // biome-ignore lint/a11y/noInteractiveElementToNoninteractiveRole: Biome 1.9 treats <i> as interactive; it is not.
+    return <i className={classNames.join(' ')} role='img' aria-label={props.label} />
+  }
+
+  return <i className={classNames.join(' ')} aria-hidden />
 }

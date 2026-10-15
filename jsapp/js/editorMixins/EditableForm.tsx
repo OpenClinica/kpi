@@ -1503,7 +1503,7 @@ export default function EditableForm(props: EditableFormProps) {
                   className='add-questions-to-library'
                   aria-label={t('Add selected questions to library')}
                 >
-                  <i className='k-icon-folder'>
+                  <i className='k-icon-folder' aria-hidden>
                     <i className='k-icon-plus' />
                   </i>
                 </bem.FormBuilderHeader__button>

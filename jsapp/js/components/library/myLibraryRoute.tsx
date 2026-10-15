@@ -164,7 +164,7 @@ export default class MyLibraryRoute extends React.Component<{}, MyLibraryRouteSt
                 data-tip={t('Learn more about Library Management')}
                 aria-label={t('Learn more about Library Management')}
               >
-                <i className='k-icon k-icon-help' />
+                <i className='k-icon k-icon-help' aria-hidden />
               </bem.LibraryActionsButtons__button>
               <bem.LibraryActionsButtons__button
                 m='all-tags-toggle'
@@ -174,7 +174,7 @@ export default class MyLibraryRoute extends React.Component<{}, MyLibraryRouteSt
                   this.clickShowAllTagsToggle.bind(this),
                 )}
               >
-                <i className='k--icon k-icon-tag' />
+                <i className='k--icon k-icon-tag' aria-hidden />
               </bem.LibraryActionsButtons__button>
             </bem.LibraryActionsButtons>
             <bem.LibraryTypeFilter>

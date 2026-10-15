@@ -215,13 +215,13 @@ module.exports = do ->
             <input type="text" placeholder="#{t("Enter question hint (optional)")}" class="card__header-hint js-card-hint js-cancel-select-row js-cancel-sort" dir="auto">
           </div>
           <div class="card__buttons">
-            <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings js-icon-button" data-button-name="settings" role="button" tabindex="0" aria-label="#{t("Question settings")}"><i class="k-icon k-icon-edit"></i></span>
-            <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row js-icon-button" data-button-name="delete" role="button" tabindex="0" aria-label="#{t("Delete Question")}"><i class="k-icon k-icon-trash"></i></span>
+            <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings js-icon-button" data-button-name="settings" role="button" tabindex="0" aria-label="#{t("Question settings")}"><i class="k-icon k-icon-edit" aria-hidden="true"></i></span>
+            <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row js-icon-button" data-button-name="delete" role="button" tabindex="0" aria-label="#{t("Delete Question")}"><i class="k-icon k-icon-trash" aria-hidden="true"></i></span>
       """
       if surveyView.features.multipleQuestions
-        template += """<span class="card__buttons__button card__buttons__button--copy card__buttons__button--blue js-clone-question js-icon-button" data-button-name="duplicate" role="button" tabindex="0" aria-label="#{t("Duplicate Question")}"><i class="k-icon k-icon-duplicate"></i></span>"""
+        template += """<span class="card__buttons__button card__buttons__button--copy card__buttons__button--blue js-clone-question js-icon-button" data-button-name="duplicate" role="button" tabindex="0" aria-label="#{t("Duplicate Question")}"><i class="k-icon k-icon-duplicate" aria-hidden="true"></i></span>"""
         if surveyView.canAddToLibrary
-          template += """<span class="card__buttons__button card__buttons__button--add card__buttons__button--teal js-add-to-question-library js-icon-button" data-button-name="add-to-library" role="button" tabindex="0" aria-label="#{t("Add Question to Library")}"><i class="k-icon k-icon-folder-plus"></i></span>"""
+          template += """<span class="card__buttons__button card__buttons__button--add card__buttons__button--teal js-add-to-question-library js-icon-button" data-button-name="add-to-library" role="button" tabindex="0" aria-label="#{t("Add Question to Library")}"><i class="k-icon k-icon-folder-plus" aria-hidden="true"></i></span>"""
 
       return template + """
           </div>
@@ -243,7 +243,7 @@ module.exports = do ->
     if surveyView.canAddToLibrary
       addToLibraryButton = """
           <span class="card__buttons__button card__buttons__button--add card__buttons__button--green js-add-group-to-library js-icon-button" data-button-name="add-group-to-library" role="button" tabindex="0" aria-label="#{t("Add Group to Library")}">
-            <i class="k-icon k-icon-folder-plus"></i>
+            <i class="k-icon k-icon-folder-plus" aria-hidden="true"></i>
           </span>
       """
     template = """
@@ -256,15 +256,15 @@ module.exports = do ->
         <input type="text" class="card__header-title js-card-label js-cancel-select-row js-cancel-sort" dir="auto">
         <div class="card__buttons">
           <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings js-icon-button" role="button" tabindex="0" aria-label="#{t("Group settings")}">
-            <i class="k-icon k-icon-edit"></i>
+            <i class="k-icon k-icon-edit" aria-hidden="true"></i>
           </span>
 
           <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-group js-icon-button" role="button" tabindex="0" aria-label="#{t("Delete Group")}">
-            <i class="k-icon k-icon-trash"></i>
+            <i class="k-icon k-icon-trash" aria-hidden="true"></i>
           </span>
 
           <span class="card__buttons__button card__buttons__button--clone card__buttons__button--gray js-clone-group js-icon-button" data-button-name="duplicate" role="button" tabindex="0" aria-label="#{t("Duplicate Group")}">
-            <i class="k-icon k-icon-duplicate"></i>
+            <i class="k-icon k-icon-duplicate" aria-hidden="true"></i>
           </span>
 
           #{addToLibraryButton}
@@ -288,8 +288,8 @@ module.exports = do ->
             <input type="text" placeholder="#{t("Item label is required")}" class="card__header-title js-card-label js-cancel-select-row js-cancel-sort" dir="auto">
           </div>
           <div class="card__buttons">
-            <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings js-icon-button" data-button-name="settings" role="button" tabindex="0" aria-label="#{t("Question settings")}"><i class="k-icon k-icon-edit"></i></span>
-            <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row js-icon-button" data-button-name="delete" role="button" tabindex="0" aria-label="#{t("Delete Question")}"><i class="k-icon k-icon-trash"></i></span>
+            <span class="card__buttons__button card__buttons__button--settings card__buttons__button--gray js-toggle-card-settings js-icon-button" data-button-name="settings" role="button" tabindex="0" aria-label="#{t("Question settings")}"><i class="k-icon k-icon-edit" aria-hidden="true"></i></span>
+            <span class="card__buttons__button card__buttons__button--delete card__buttons__button--red js-delete-row js-icon-button" data-button-name="delete" role="button" tabindex="0" aria-label="#{t("Delete Question")}"><i class="k-icon k-icon-trash" aria-hidden="true"></i></span>
           </div>
         </div>
         <p class="kobomatrix-warning">#{t("Note: The Matrix question type only works in Enketo web forms using the 'grid' style.")}</p>
@@ -534,7 +534,7 @@ module.exports = do ->
 
   expandChoiceList = ()->
     template = """
-    <span class="card__buttons__multioptions js-toggle-row-multioptions js-cancel-select-row js-icon-button" role="button" tabindex="0" aria-expanded="true" aria-label="#{t("Show / hide choices")}"><i class='k-icon k-icon-caret-down' /></span>
+    <span class="card__buttons__multioptions js-toggle-row-multioptions js-cancel-select-row js-icon-button" role="button" tabindex="0" aria-expanded="true" aria-label="#{t("Show / hide choices")}"><i class='k-icon k-icon-caret-down' aria-hidden="true" /></span>
     """
     return template
 

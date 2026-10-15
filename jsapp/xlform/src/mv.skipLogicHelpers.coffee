@@ -420,7 +420,7 @@ module.exports = do ->
       # alternative; Relevant is the only user of this base hand-code helper
       # (Constraint overrides with its own template — ValidationLogicHandCodeHelper).
       @textarea = @view_factory.create_textarea @criteria, 'skiplogic__handcode-edit', t('Always shown — type a rule, or use the AI Assistant.')
-      @button = @view_factory.create_button "<i class=\"k-icon k-icon-trash\"></i><span class=\"visuallyhidden\">#{t('Remove logic')}</span>", 'skiplogic-handcode__cancel'
+      @button = @view_factory.create_button "<i class=\"k-icon k-icon-trash\" aria-hidden=\"true\"></i><span class=\"visuallyhidden\">#{t('Remove logic')}</span>", 'skiplogic-handcode__cancel'
     textarea_change_handler: () ->
       @criteria = @textarea.val()
       @context.view_factory.survey.trigger('change')

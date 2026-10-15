@@ -494,6 +494,7 @@ export class TranslationSettings extends React.Component<TranslationSettingsProp
                 size='m'
                 onClick={this.hideAddLanguageForm.bind(this)}
                 startIcon='close'
+                aria-label={t('Close')}
               />
 
               <bem.FormView__cell m='label'>{t('Add a new language')}</bem.FormView__cell>

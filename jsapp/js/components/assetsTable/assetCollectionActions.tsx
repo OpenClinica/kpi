@@ -45,7 +45,7 @@ class AssetCollectionActions extends React.Component<AssetCollectionActionsProps
   renderTrigger() {
     return (
       <div className='right-tooltip' data-tip={t('Manage collection')}>
-        <i className='k-icon k-icon-folder' />
+        <i className='k-icon k-icon-folder' aria-hidden />
       </div>
     )
   }
