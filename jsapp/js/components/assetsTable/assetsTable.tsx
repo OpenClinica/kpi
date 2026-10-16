@@ -295,7 +295,19 @@ export default class AssetsTable extends React.Component<AssetsTableProps, Asset
     }
 
     return (
-      <bem.AssetsTableRow__column m={columnDef.id} onClick={this.onChangeOrder.bind(this, columnDef.id)}>
+      <bem.AssetsTableRow__column
+        m={columnDef.id}
+        role='button'
+        tabIndex={0}
+        aria-label={columnDef.label}
+        onClick={this.onChangeOrder.bind(this, columnDef.id)}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            this.onChangeOrder(columnDef.id)
+          }
+        }}
+      >
         {!hideLabel && <bem.AssetsTableRow__headerLabel>{columnDef.label}</bem.AssetsTableRow__headerLabel>}
         {!hideIcon && icon}
       </bem.AssetsTableRow__column>
