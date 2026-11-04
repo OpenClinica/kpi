@@ -104,7 +104,7 @@
 
     &.locked-features__list--cants {
       .k-icon {
-        color: colors.$kobo-mid-red;
+        color: colors.$kobo-red; // OC-29218: 6.47:1 on white, was $kobo-mid-red (2.43:1)
       }
     }
   }

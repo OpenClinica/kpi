@@ -231,7 +231,7 @@
   }
 
   select.is-placeholder {
-    color: #94A3B8;
+    color: colors.$kobo-gray-700; // OC-29218: was #94A3B8 (2.56:1)
   }
 
   select.is-placeholder option {
@@ -241,7 +241,7 @@
   input[type="text"],
   textarea {
     &::placeholder {
-      color: #94A3B8;
+      color: colors.$kobo-gray-700; // OC-29218: was #94A3B8 (2.56:1)
     }
   }
 
