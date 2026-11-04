@@ -226,7 +226,7 @@ $s-help-bubble-row-spacing: 20px;
   }
 
   &:active {
-    color: colors.$kobo-teal;
+    color: colors.$kobo-dark-teal; // OC-29218: was $kobo-teal (2.05:1)
   }
 }
 
@@ -239,6 +239,6 @@ $s-help-bubble-row-spacing: 20px;
   }
 
   &:active {
-    border-left-color: colors.$kobo-teal;
+    border-left-color: colors.$kobo-dark-teal; // OC-29218: 7.42:1, was $kobo-teal (2.05:1)
   }
 }
