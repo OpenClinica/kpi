@@ -1,3 +1,5 @@
+@use 'scss/colors';
+
 // Appearance card-grid section
 
 .card__settings__appearance-section {
@@ -91,7 +93,7 @@
   gap: 6px;
   padding: 10px 6px 8px;
   background: #fff;
-  border: 1.5px solid #CBD5E1;
+  border: 1.5px solid colors.$kobo-gray-400;
   border-radius: 6px;
   cursor: pointer;
   text-align: center;
@@ -137,7 +139,7 @@
 .appearance-columns-control {
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid #CBD5E1;
+  border: 1px solid colors.$kobo-gray-400;
   border-radius: 6px;
   background: #F8FAFC;
 }
@@ -204,7 +206,7 @@
 .appearance-custom-input {
   width: 100%;
   padding: 6px 10px;
-  border: 1.5px solid #CBD5E1;
+  border: 1.5px solid colors.$kobo-gray-400;
   border-radius: 6px;
   font-size: 13px;
   color: #020617;
@@ -387,7 +389,7 @@
 
 .width-card {
   background: #fff;
-  border: 0.5px solid #CBD5E1;
+  border: 0.5px solid colors.$kobo-gray-400;
   border-radius: 5px;
   padding: 10px 6px 7px;
   display: flex;
@@ -568,7 +570,7 @@
 // Same base style as .width-card
 .group-cols-card {
   background: #fff;
-  border: 0.5px solid #CBD5E1;
+  border: 0.5px solid colors.$kobo-gray-400;
   border-radius: 5px;
   padding: 10px 6px 7px;
   display: flex;

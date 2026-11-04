@@ -433,7 +433,9 @@ tr .scorecell__radio:hover {
   padding: 8px 10px;
   border: 0;
   border-radius: 4px;
-  background-color: colors.$kobo-gray-500;
+  // OC-29218: gray-500 gave white text only 2.26:1; PRD 4.2 primary
+  // action (design note 6)
+  background-color: colors.$kobo-blue;
   color: colors.$kobo-white;
   font-weight: 600;
   text-transform: uppercase;

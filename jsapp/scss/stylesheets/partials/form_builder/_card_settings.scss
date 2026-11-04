@@ -217,7 +217,7 @@
   select {
     width: 100%;
     background: colors.$kobo-white;
-    border: 1px solid #CBD5E1;
+    border: 1px solid colors.$kobo-gray-400;
     border-radius: 4px;
     padding: 5px 10.5px;
     font-size: 13px;
@@ -407,7 +407,8 @@
 }
 
 .card__settings-close {
-  background: colors.$kobo-gray-500;
+  // OC-29218: gray-500 gave the white icon only 2.26:1; PRD 4.2 body text
+  background: colors.$kobo-gray-800;
   position: absolute;
   right: 6px;
   top: 6px;

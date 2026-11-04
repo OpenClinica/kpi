@@ -229,11 +229,13 @@ $button-border-radius: 6px;
   );
 }
 
+// OC-29218 (WCAG 2.2 AA): accessible "Secondary action" values (#eaeaea bg,
+// #333847 text, 9.71:1). Was dark blue text on $kobo-bg-blue.
 .k-button.k-button--type-secondary {
   @include button-colors(
-    $textColor: colors.$kobo-dark-blue,
-    $mainBgColor: colors.$kobo-bg-blue,
-    $hoverBgColor: colors.$kobo-light-blue,
+    $textColor: colors.$kobo-gray-800,
+    $mainBgColor: #eaeaea,
+    $hoverBgColor: colors.$kobo-gray-300,
   );
 }
 

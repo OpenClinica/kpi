@@ -203,14 +203,16 @@ $s-form-builder-content-width: 1024px;
       gap: 10px;
       padding-right: 10px;
 
-      // OpenClinica: outlined style for secondary (back) button
+      // OpenClinica: secondary (back) button. OC-29218 (WCAG 2.2 AA): uses the
+      // accessible "Secondary action" values instead of the blue outline; the
+      // transparent border keeps the header layout unchanged.
       .k-button.k-button--type-secondary {
-        background-color: colors.$kobo-white;
-        border: 2px solid colors.$kobo-blue;
-        color: colors.$kobo-blue;
+        background-color: #eaeaea;
+        border: 2px solid transparent;
+        color: colors.$kobo-gray-800;
 
         &:hover:not([disabled]) {
-          background-color: colors.$kobo-bg-blue;
+          background-color: colors.$kobo-gray-300;
         }
       }
     }
@@ -614,7 +616,7 @@ $s-form-builder-content-width: 1024px;
 
     .settings__input {
       input[type='text'] {
-        border: 1px solid colors.$kobo-gray-300;
+        border: 1px solid colors.$kobo-gray-400;
       }
     }
   }

@@ -100,7 +100,8 @@
     .card__header-name {
         text-align: right;
         padding-bottom: 10px;
-        color: colors.$kobo-gray-65;
+        // OC-29218: gray-65 (#a6acbf) was 2.26:1 on white; PRD 4.2 body text
+        color: colors.$kobo-gray-800;
 
         &:focus {
             color: colors.$kobo-gray-14;
@@ -321,7 +322,8 @@ $cardIndicatorIconWidth: 21px;
     cursor: pointer;
 
     &.card__buttons__button--gray {
-        color: colors.$kobo-gray-700;
+        // OC-29218: PRD 4.2 body text colour for toolbar icons
+        color: colors.$kobo-gray-800;
     }
 
     &.card__buttons__button--red {
@@ -333,7 +335,8 @@ $cardIndicatorIconWidth: 21px;
     }
 
     &.card__buttons__button--teal {
-        color: colors.$kobo-teal;
+        // OC-29218: $kobo-teal was 2.05:1 on white, below 3:1 for icons
+        color: colors.$kobo-dark-teal;
     }
 
     &.card__buttons__button--delete {
@@ -350,14 +353,15 @@ $cardIndicatorIconWidth: 21px;
     }
 
     &.card__buttons__button--activated {
-        color: colors.$kobo-gray-700;
+        color: colors.$kobo-gray-800;
         background-color: colors.$kobo-gray-300;
         opacity: 1;
     }
 
     &:hover,
     &.card__buttons__button--activated:hover {
-        opacity: 0.5;
+        // OC-29218: was 0.5, which faded icons below 3:1
+        opacity: 0.8;
     }
 
     .k-icon {
