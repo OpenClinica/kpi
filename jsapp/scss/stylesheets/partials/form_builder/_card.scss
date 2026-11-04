@@ -74,7 +74,7 @@
         }
 
         .ui-resizable-handle {
-            color: colors.$kobo-gray-65;
+            color: colors.$kobo-gray-400; // OC-29218: 3.78:1, gray-65 (#a6acbf) was 2.26:1
         }
 
         .ui-resizable-s {

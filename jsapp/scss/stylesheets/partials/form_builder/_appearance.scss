@@ -176,7 +176,7 @@
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    color: colors.$kobo-blue;
+    color: colors.$kobo-hover-blue; // OC-29218: 5.62:1 on #F1F5F9, $kobo-blue was 4.41:1
   }
 
   &.is-active {

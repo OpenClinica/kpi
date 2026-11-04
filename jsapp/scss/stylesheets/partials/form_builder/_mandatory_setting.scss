@@ -41,7 +41,7 @@
       }
 
       &::placeholder {
-        color: colors.$kobo-gray-65;
+        color: colors.$kobo-gray-700; // OC-29218: 6.04:1, gray-65 (#a6acbf) was 2.26:1
       }
     }
 
