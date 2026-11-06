@@ -234,8 +234,8 @@ $button-border-radius: 6px;
 .k-button.k-button--type-secondary {
   @include button-colors(
     $textColor: colors.$kobo-gray-800,
-    $mainBgColor: #eaeaea,
-    $hoverBgColor: #dcdcdc, // proposed PRD secondary hover (spec v0.6), 8.52:1
+    $mainBgColor: colors.$oc-secondary-bg,
+    $hoverBgColor: colors.$oc-secondary-hover, // proposed PRD secondary hover (spec v0.6), 8.52:1
   );
 }
 

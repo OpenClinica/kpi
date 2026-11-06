@@ -65,7 +65,7 @@
   width: 35px;
   height: 35px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   transition: transform 0.2s ease;
 }
@@ -101,7 +101,7 @@
 
   &:hover {
     // OC-29218: keep a 3:1 border on hover (#94A3B8 was 2.45:1 on #F8FAFC)
-    border-color: #475569; // proposed PRD input border hover (spec v0.6), 7.15:1 on #F8FAFC
+    border-color: colors.$oc-input-border-hover; // proposed PRD input border hover (spec v0.6), 7.15:1 on #F8FAFC
     background: #F8FAFC;
   }
 
@@ -190,7 +190,7 @@
   margin-top: 8px;
   font-size: 11px;
   font-style: italic;
-  color: #64748B;
+  color: colors.$oc-placeholder;
 
   code {
     font-family: Menlo, Consolas, monospace;
@@ -344,7 +344,7 @@
   width: 35px;
   height: 35px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   flex-shrink: 0;
   margin-left: auto;
@@ -353,7 +353,7 @@
 
 .item-width__context {
   font-size: 11px;
-  color: #64748B;
+  color: colors.$oc-placeholder;
   font-style: italic;
   margin: 3px 0 0 0;
 }
@@ -374,7 +374,7 @@
 
 .item-width__advisory {
   font-size: 11px;
-  color: #475569; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
+  color: colors.$oc-secondary-text; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
   font-style: italic;
   margin-top: 6px;
 }
@@ -401,7 +401,7 @@
   user-select: none;
 
   &:hover {
-    border-color: #475569; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
   }
 
   &:focus-visible {
@@ -542,7 +542,7 @@
   width: 20px;
   height: 20px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   flex-shrink: 0;
   margin-left: auto;
@@ -555,7 +555,7 @@
 
 .group-cols__instruction {
   font-size: 11px;
-  color: #64748B;
+  color: colors.$oc-placeholder;
   font-style: italic;
   margin-top: 0;
   margin-bottom: 8px;
@@ -582,7 +582,7 @@
   user-select: none;
 
   &:hover {
-    border-color: #475569; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
   }
 
   &:focus-visible {
@@ -654,7 +654,7 @@
 
 .group-cols__advisory {
   font-size: 11px;
-  color: #475569; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
+  color: colors.$oc-secondary-text; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
   font-style: italic;
   margin-top: 6px;
 }

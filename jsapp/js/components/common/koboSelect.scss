@@ -285,7 +285,7 @@ $k-select-menu-padding: 6px;
 
   &:not(.k-select--is-menu-visible) .k-select__trigger:hover,
   &.k-select--is-pending .k-select__trigger {
-    border-color: #475569; // OC-29218: proposed PRD input border hover (spec v0.6), 7.58:1 on white
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6), 7.58:1 on white
     color: colors.$kobo-gray-800;
   }
 

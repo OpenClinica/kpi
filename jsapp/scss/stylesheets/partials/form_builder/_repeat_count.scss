@@ -32,6 +32,6 @@
   }
 
   &::placeholder {
-    color: #64748B; // OC-29218: PRD placeholder, 4.76:1 on white; gray-65 (#a6acbf) was 2.26:1
+    color: colors.$oc-placeholder; // OC-29218: PRD placeholder, 4.76:1 on white; gray-65 (#a6acbf) was 2.26:1
   }
 }

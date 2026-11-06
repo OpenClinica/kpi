@@ -41,6 +41,16 @@ $kobo-gray-100: hsl(240deg 20% 98%); // #f9f9fb
 $kobo-white: hsl(0deg 0% 100%); // #ffffff
 
 /*
+ * OC-29218 (WCAG 2.2 AA): PRD 4.2 values that have no Kobo shade. Use these
+ * variables rather than repeating the hex values.
+ */
+$oc-secondary-bg: #eaeaea; // Secondary action background, #333847 text 9.71:1
+$oc-secondary-hover: #dcdcdc; // proposed PRD secondary hover (spec 9.1 Q1), 8.52:1
+$oc-secondary-text: #475569; // Secondary text (hints, help, icons), 7.58:1 on white
+$oc-placeholder: #64748b; // Placeholder, 4.76:1 on white
+$oc-input-border-hover: #475569; // proposed PRD input border hover (spec 9.1 Q1)
+
+/*
  * Primary colours & shades
  */
 

@@ -32,7 +32,7 @@
 
 .k-inline-message--type-default {
   background-color: colors.$kobo-gray-200;
-  .k-icon {color: #475569;} // OC-29218: PRD secondary text, 6.54:1 on gray-200
+  .k-icon {color: colors.$oc-secondary-text;} // OC-29218: PRD secondary text, 6.54:1 on gray-200
 }
 
 .k-inline-message--type-error {

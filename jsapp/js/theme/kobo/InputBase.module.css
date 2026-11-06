@@ -3,17 +3,17 @@
 }
 
 .input {
-  border-color: var(--mantine-color-gray-6);
+  border-color: var(--mantine-color-gray-5); /* OC-29218: PRD 4.2 input border #7d8396, 3.78:1 */
 
   &::placeholder {
-    color: var(--mantine-color-gray-3);
+    color: #64748b; /* OC-29218: PRD 4.2 placeholder, 4.76:1 on white */
     opacity: 1;
   }
 }
 
 .input[data-disabled] {
   background-color: var(--mantine-color-gray-7);
-  border-color: var(--mantine-color-gray-3);
+  border-color: var(--mantine-color-gray-5); /* OC-29218: PRD 4.2 input border applies to disabled inputs too */
   color: var(--mantine-color-gray-3);
 
   &::placeholder {
@@ -22,7 +22,7 @@
 }
 
 .input[data-error] {
-  border-color: var(--mantine-color-red-7);
+  border-color: var(--mantine-color-red-6); /* OC-29218: PRD 4.2 error #b91c1c, 6.47:1; red-7 #ff8080 was 2.4:1 */
 }
 
 .section {

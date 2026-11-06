@@ -81,7 +81,8 @@
             border-top: 1px solid colors.$kobo-gray-85;
 
             &:hover {
-                border-top: 1px solid darken(colors.$kobo-gray-85, 20%);
+                // OC-29218: fixed value instead of darken() on a token (spec principle 1)
+                border-top: 1px solid colors.$oc-input-border-hover;
             }
         }
     }
@@ -358,10 +359,14 @@ $cardIndicatorIconWidth: 21px;
         opacity: 1;
     }
 
-    &:hover,
+    // OC-29218: hover is shown by a background, not an opacity fade, so icons
+    // keep their contrast (spec principle 1). Was opacity 0.5 (below 3:1).
+    &:hover {
+        background-color: colors.$kobo-gray-200;
+    }
+
     &.card__buttons__button--activated:hover {
-        // OC-29218: was 0.5, which faded icons below 3:1
-        opacity: 0.8;
+        background-color: colors.$kobo-gray-300;
     }
 
     .k-icon {

@@ -207,12 +207,12 @@ $s-form-builder-content-width: 1024px;
       // accessible "Secondary action" values instead of the blue outline; the
       // transparent border keeps the header layout unchanged.
       .k-button.k-button--type-secondary {
-        background-color: #eaeaea;
+        background-color: colors.$oc-secondary-bg;
         border: 2px solid transparent;
         color: colors.$kobo-gray-800;
 
         &:hover:not([disabled]) {
-          background-color: #dcdcdc; // proposed PRD secondary hover (spec v0.6)
+          background-color: colors.$oc-secondary-hover; // proposed PRD secondary hover (spec v0.6)
         }
       }
     }

@@ -10,17 +10,17 @@
 }
 
 .input {
-  border-color: var(--mantine-color-gray-6);
+  border-color: var(--mantine-color-gray-5); /* OC-29218: PRD 4.2 input border #7d8396, 3.78:1 */
 
   &::placeholder {
-    color: var(--mantine-color-gray-3);
+    color: #64748b; /* OC-29218: PRD 4.2 placeholder, 4.76:1 on white */
     opacity: 1;
   }
 }
 
 .input:has(input:disabled) {
   background-color: var(--mantine-color-gray-7);
-  border-color: var(--mantine-color-gray-3);
+  border-color: var(--mantine-color-gray-5); /* OC-29218: PRD 4.2 input border applies to disabled inputs too */
 
   &::placeholder {
     color: var(--mantine-color-gray-2);
