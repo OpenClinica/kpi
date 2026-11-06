@@ -69,7 +69,7 @@
     align-content: center;
 
     &:hover {
-      border-color: colors.$kobo-gray-700;
+      border-color: #475569; // OC-29218: proposed PRD input border hover (spec v0.6), 7.58:1 on white
     }
 
     &.kobo-select__control--is-focused {
@@ -86,7 +86,7 @@
 
   .kobo-select__placeholder {
     // OC-29218: gray-500 was 2.26:1 on white, below 4.5:1
-    color: colors.$kobo-gray-700;
+    color: #64748B; // PRD placeholder, 4.76:1 on white
   }
 
   .kobo-select__indicator-separator {

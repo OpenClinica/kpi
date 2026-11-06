@@ -231,7 +231,7 @@
   }
 
   select.is-placeholder {
-    color: colors.$kobo-gray-700; // OC-29218: was #94A3B8 (2.56:1)
+    color: #64748B; // OC-29218: PRD placeholder, 4.76:1 on white; was #94A3B8 (2.56:1)
   }
 
   select.is-placeholder option {
@@ -241,7 +241,7 @@
   input[type="text"],
   textarea {
     &::placeholder {
-      color: colors.$kobo-gray-700; // OC-29218: was #94A3B8 (2.56:1)
+      color: #64748B; // OC-29218: PRD placeholder, 4.76:1 on white; was #94A3B8 (2.56:1)
     }
   }
 

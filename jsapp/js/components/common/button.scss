@@ -235,7 +235,7 @@ $button-border-radius: 6px;
   @include button-colors(
     $textColor: colors.$kobo-gray-800,
     $mainBgColor: #eaeaea,
-    $hoverBgColor: colors.$kobo-gray-300,
+    $hoverBgColor: #dcdcdc, // proposed PRD secondary hover (spec v0.6), 8.52:1
   );
 }
 

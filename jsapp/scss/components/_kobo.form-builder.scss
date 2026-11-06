@@ -212,7 +212,7 @@ $s-form-builder-content-width: 1024px;
         color: colors.$kobo-gray-800;
 
         &:hover:not([disabled]) {
-          background-color: colors.$kobo-gray-300;
+          background-color: #dcdcdc; // proposed PRD secondary hover (spec v0.6)
         }
       }
     }
