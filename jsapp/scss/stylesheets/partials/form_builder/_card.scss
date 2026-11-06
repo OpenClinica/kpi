@@ -131,9 +131,11 @@
             }
         }
 
+        // OC-29218: PRD placeholder, 4.76:1 on white. Was inherit at opacity 0.6
+        // (about 2.6:1, and a fade that spec principle 1 rules out).
         &::placeholder {
-            color: inherit;
-            opacity: 0.6;
+            color: colors.$oc-placeholder;
+            opacity: 1;
         }
     }
 
@@ -163,7 +165,7 @@
         }
 
         &::placeholder {
-            color: colors.$kobo-gray-700;
+            color: colors.$oc-placeholder; // OC-29218: PRD placeholder, was $kobo-gray-700
             font-style: italic;
         }
     }

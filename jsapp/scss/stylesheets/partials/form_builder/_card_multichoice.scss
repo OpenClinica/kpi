@@ -96,6 +96,12 @@
 
 // .xlf-option-view BECOMES .multioptions__option
 .multioptions__option {
+  // OC-29218: PRD placeholder for the choice inputs (was the browser default)
+  .option-view-input::placeholder {
+    color: colors.$oc-placeholder;
+    opacity: 1;
+  }
+
   margin-bottom: 4px;
   margin-left: 4px;
   position: relative;

@@ -116,7 +116,8 @@ input[class].input.input {
   }
 
   &::placeholder {
-    color: colors.$kobo-gray-600;
+    // OC-29218: PRD placeholder, 4.76:1 on white; $kobo-gray-600 was 3.5:1
+    color: colors.$oc-placeholder;
     opacity: 1;
   }
 }
