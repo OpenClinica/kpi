@@ -31,6 +31,7 @@ import moment from 'moment'
 import { Cookies } from 'react-cookie'
 import { createRoot } from 'react-dom/client'
 import Modal from 'react-modal'
+import { initEscapeToParent } from '#/escapeToParent'
 import {
   addCustomEventListener,
   checkCrossStorageTimeOut,
@@ -172,6 +173,7 @@ if (document.head.querySelector('meta[name=kpi-root-path]')) {
     Modal.setAppElement('#kpiapp')
     return $d.get(0)
   })()
+  initEscapeToParent()
   const root = createRoot(el)
   root.render(<AllRoutes />)
 } else {
