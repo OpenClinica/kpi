@@ -1,4 +1,5 @@
 import alertify from 'alertifyjs'
+import chai from 'chai'
 import '#/alertifyA11y'
 
 describe('alertifyA11y — OC-29220', () => {
@@ -34,5 +35,13 @@ describe('alertifyA11y — OC-29220', () => {
     dialog.close()
     alertify.confirm().set({ defaultFocus: 'ok' }).show()
     chai.expect(alertify.confirm().__internal.focus.element).to.equal(0)
+  })
+
+  it('still applies when the caller sets its own onshow', () => {
+    // `alert` is a singleton no other test shows, so show() runs on a fresh instance
+    const onshow = jest.fn()
+    const dialog = alertify.alert().set({ onshow, title: 'Own onshow', message: 'x' }).show()
+    chai.expect(onshow.mock.calls.length).to.equal(1)
+    chai.expect(dialog.elements.dialog.getAttribute('role')).to.equal('alertdialog')
   })
 })
