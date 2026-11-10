@@ -2,7 +2,9 @@ import './modal.scss'
 
 import React from 'react'
 
+import { FocusTrap } from '@mantine/core'
 import classNames from 'classnames'
+import { uniqueId } from 'lodash'
 import bem from '#/bem'
 import Button from '#/components/common/button'
 import { KEY_CODES } from '#/constants'
@@ -56,12 +58,20 @@ export default class Modal extends React.Component<ModalProps> {
 
   escFunctionBound = this.escFunction.bind(this)
 
+  titleId = uniqueId('modal-title-')
+
+  /** Captured at construction, i.e. before FocusTrap moves the focus into the modal. */
+  opener = document.activeElement as HTMLElement | null
+
   componentDidMount() {
     document.addEventListener('keydown', this.escFunctionBound)
   }
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.escFunctionBound)
+    if (this.opener?.isConnected) {
+      this.opener.focus()
+    }
   }
 
   escFunction(evt: KeyboardEvent) {
@@ -82,12 +92,12 @@ export default class Modal extends React.Component<ModalProps> {
     } else if (this.props.small) {
       return (
         <div>
-          <bem.Modal__title>{this.props.title}</bem.Modal__title>
+          <bem.Modal__title id={this.titleId}>{this.props.title}</bem.Modal__title>
           <h6>{this.props.small}</h6>
         </div>
       )
     } else {
-      return <bem.Modal__title>{this.props.title}</bem.Modal__title>
+      return <bem.Modal__title id={this.titleId}>{this.props.title}</bem.Modal__title>
     }
   }
 
@@ -104,27 +114,34 @@ export default class Modal extends React.Component<ModalProps> {
   }
 
   render() {
+    const labelledByTitle = !this.props.customModalHeader && !!this.props.title
     return (
       <bem.Modal__backdrop onClick={this.backdropClick.bind(this)}>
-        <div
-          className={classNames(
-            'modal',
-            this.props.className,
-            this.props.open ? 'modal--open' : null,
-            this.props.large ? 'modal--large' : null,
-            this.props.icon ? 'modal--withicon' : null,
-          )}
-        >
-          {this.props.icon && <i className={classNames('modal_icon', `modal_icon--${this.props.icon}`)} />}
-          <bem.Modal__content>
-            <bem.Modal__header>
-              {!this.props.customModalHeader && this.renderTitle()}
-              {this.props.customModalHeader}
-              {this.renderClose()}
-            </bem.Modal__header>
-            {this.props.children}
-          </bem.Modal__content>
-        </div>
+        <FocusTrap active>
+          <div
+            role='dialog'
+            aria-modal='true'
+            aria-labelledby={labelledByTitle ? this.titleId : undefined}
+            aria-label={labelledByTitle ? undefined : this.props.title}
+            className={classNames(
+              'modal',
+              this.props.className,
+              this.props.open ? 'modal--open' : null,
+              this.props.large ? 'modal--large' : null,
+              this.props.icon ? 'modal--withicon' : null,
+            )}
+          >
+            {this.props.icon && <i className={classNames('modal_icon', `modal_icon--${this.props.icon}`)} />}
+            <bem.Modal__content>
+              <bem.Modal__header>
+                {!this.props.customModalHeader && this.renderTitle()}
+                {this.props.customModalHeader}
+                {this.renderClose()}
+              </bem.Modal__header>
+              {this.props.children}
+            </bem.Modal__content>
+          </div>
+        </FocusTrap>
       </bem.Modal__backdrop>
     )
   }
