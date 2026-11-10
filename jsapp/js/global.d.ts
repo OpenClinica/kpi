@@ -43,6 +43,7 @@ interface AlertifyDialogInstance {
       key: number
       className: string
       element: any
+      invokeOnClose?: boolean
     }>
     focus: {
       element: number
@@ -104,7 +105,7 @@ interface AlertifyDialogInstance {
     buttonTemplate: HTMLElement
   }
   get: (key: string) => any
-  hooks: {}
+  hooks: { onshow?: () => void; onclose?: () => void }
   isMaximized: Function
   isModal: Function
   isOpen: Function
