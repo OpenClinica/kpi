@@ -4,10 +4,11 @@ import React from 'react'
 
 import { FocusTrap } from '@mantine/core'
 import classNames from 'classnames'
-import { uniqueId } from 'lodash'
 import bem from '#/bem'
 import Button from '#/components/common/button'
 import { KEY_CODES } from '#/constants'
+
+let nextModalId = 0
 
 interface ModalPartialProps {
   children?: React.ReactNode
@@ -60,7 +61,7 @@ export default class Modal extends React.Component<ModalProps> {
 
   modalEl: HTMLDivElement | null = null
 
-  titleId = uniqueId('modal-title-')
+  titleId = `modal-title-${nextModalId++}`
 
   /** Captured at construction, i.e. before FocusTrap moves the focus into the modal. */
   opener = document.activeElement as HTMLElement | null

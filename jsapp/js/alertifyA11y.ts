@@ -1,7 +1,8 @@
 // OC-29220: global accessibility defaults for every alertifyjs dialog.
 // alertify has no role/aria support, so every dialog gets them from one hook.
 import alertify from 'alertifyjs'
-import { uniqueId } from 'lodash'
+
+let nextId = 0
 
 /** Runs on every show of every alertify dialog (the hook is internal, so per-dialog `onshow` settings are untouched). */
 export function applyDialogA11y(instance: AlertifyDialogInstance) {
@@ -12,11 +13,11 @@ export function applyDialogA11y(instance: AlertifyDialogInstance) {
   dialog.setAttribute('role', hasButtons ? 'alertdialog' : 'dialog')
   dialog.setAttribute('aria-modal', String(instance.isModal()))
   if (hasTitle) {
-    header.id ||= uniqueId('alertify-title-')
+    header.id ||= `alertify-title-${nextId++}`
     dialog.setAttribute('aria-labelledby', header.id)
   }
   if (hasButtons) {
-    content.id ||= uniqueId('alertify-message-')
+    content.id ||= `alertify-message-${nextId++}`
     dialog.setAttribute('aria-describedby', content.id)
   }
 
