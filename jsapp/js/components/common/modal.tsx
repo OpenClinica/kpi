@@ -58,6 +58,8 @@ export default class Modal extends React.Component<ModalProps> {
 
   escFunctionBound = this.escFunction.bind(this)
 
+  modalEl: HTMLDivElement | null = null
+
   titleId = uniqueId('modal-title-')
 
   /** Captured at construction, i.e. before FocusTrap moves the focus into the modal. */
@@ -75,9 +77,20 @@ export default class Modal extends React.Component<ModalProps> {
   }
 
   escFunction(evt: KeyboardEvent) {
-    if (!this.props.disableEscClose && (evt.keyCode === KEY_CODES.ESC || evt.key === 'Escape')) {
-      this.props.onClose.call(evt)
+    if (
+      this.props.disableEscClose ||
+      evt.defaultPrevented ||
+      !(evt.keyCode === KEY_CODES.ESC || evt.key === 'Escape')
+    ) {
+      return
     }
+    // Ignore Escape aimed at something stacked on top (e.g. an alertify confirm
+    // opened from onClose), so the same keypress does not close twice.
+    const target = evt.target as Node | null
+    if (target && target !== document.body && !this.modalEl?.contains(target)) {
+      return
+    }
+    this.props.onClose.call(evt)
   }
 
   backdropClick(evt: TouchEvent) {
@@ -106,9 +119,9 @@ export default class Modal extends React.Component<ModalProps> {
       return <Button type='text' size='l' label={t('DONE')} onClick={this.props.onClose} />
     } else {
       return (
-        <a className='modal__x' type='button' onClick={this.props.onClose}>
+        <button type='button' className='modal__x' aria-label={t('Close')} onClick={this.props.onClose}>
           <i className='k-icon k-icon-close' />
-        </a>
+        </button>
       )
     }
   }
@@ -117,7 +130,7 @@ export default class Modal extends React.Component<ModalProps> {
     const labelledByTitle = !this.props.customModalHeader && !!this.props.title
     return (
       <bem.Modal__backdrop onClick={this.backdropClick.bind(this)}>
-        <FocusTrap active>
+        <FocusTrap active innerRef={(el: HTMLDivElement | null) => (this.modalEl = el)}>
           <div
             role='dialog'
             aria-modal='true'
