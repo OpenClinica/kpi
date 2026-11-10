@@ -22,6 +22,7 @@ import '@fontsource/roboto/500.css'
 // import '@fontsource/roboto/600.css'
 import '@fontsource/roboto/700.css'
 import '../scss/main.scss'
+import '#/alertifyA11y'
 
 import React from 'react'
 
