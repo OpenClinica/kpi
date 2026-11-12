@@ -96,6 +96,12 @@
 
 // .xlf-option-view BECOMES .multioptions__option
 .multioptions__option {
+  // OC-29218: PRD placeholder for the choice inputs (was the browser default)
+  .option-view-input::placeholder {
+    color: colors.$oc-placeholder;
+    opacity: 1;
+  }
+
   margin-bottom: 4px;
   margin-left: 4px;
   position: relative;
@@ -116,9 +122,10 @@
     position: relative;
     min-height: 18px;
 
+    // OC-29218: lightening $kobo-blue gave 3.5:1 on white, so use it as is
     &:focus {
-      border-color: color.adjust(colors.$kobo-blue, $lightness: 10%);
-      color: color.adjust(colors.$kobo-blue, $lightness: 10%);
+      border-color: colors.$kobo-blue;
+      color: colors.$kobo-blue;
     }
 
     span {

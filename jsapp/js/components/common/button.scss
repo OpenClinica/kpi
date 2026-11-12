@@ -229,11 +229,13 @@ $button-border-radius: 6px;
   );
 }
 
+// OC-29218 (WCAG 2.2 AA): accessible "Secondary action" values (#eaeaea bg,
+// #333847 text, 9.71:1). Was dark blue text on $kobo-bg-blue.
 .k-button.k-button--type-secondary {
   @include button-colors(
-    $textColor: colors.$kobo-dark-blue,
-    $mainBgColor: colors.$kobo-bg-blue,
-    $hoverBgColor: colors.$kobo-light-blue,
+    $textColor: colors.$kobo-gray-800,
+    $mainBgColor: colors.$oc-secondary-bg,
+    $hoverBgColor: colors.$oc-secondary-hover, // proposed PRD secondary hover (spec v0.6), 8.52:1
   );
 }
 
@@ -241,7 +243,7 @@ $button-border-radius: 6px;
   @include button-colors(
     $textColor: colors.$kobo-white,
     $mainBgColor: colors.$kobo-red,
-    $hoverBgColor: colors.$kobo-dark-red,
+    $hoverBgColor: colors.$oc-error-hover, // OC-29218: PRD error hover, was $kobo-dark-red #850000
   );
 }
 

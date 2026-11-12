@@ -26,7 +26,8 @@ $label-leading: 20px;
     .inputWrapper {
       color: colors.$kobo-gray-500;
       background-color: colors.$kobo-gray-100;
-      border-color: colors.$kobo-gray-500;
+      // OC-29218: accessible input border applies to disabled inputs too
+      border-color: colors.$kobo-gray-400;
     }
 
     .startIcon,
@@ -37,7 +38,7 @@ $label-leading: 20px;
 
   &.hasError {
     .inputWrapper {
-      border-color: colors.$kobo-mid-red;
+      border-color: colors.$kobo-red;
     }
 
     .input {
@@ -77,7 +78,8 @@ $label-leading: 20px;
   align-content: flex-start;
   color: $input-color;
   background-color: colors.$kobo-white;
-  border: 1px solid colors.$kobo-gray-300;
+  // OC-29218: gray-300 was 1.26:1, below 3:1 for input borders
+  border: 1px solid colors.$kobo-gray-400;
   padding: 0; // size dictates the paddings
   border-radius: $wrapper-border-radius;
   cursor: text;
@@ -114,7 +116,8 @@ input[class].input.input {
   }
 
   &::placeholder {
-    color: colors.$kobo-gray-600;
+    // OC-29218: PRD placeholder, 4.76:1 on white; $kobo-gray-600 was 3.5:1
+    color: colors.$oc-placeholder;
     opacity: 1;
   }
 }

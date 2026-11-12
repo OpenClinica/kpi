@@ -1,3 +1,5 @@
+@use 'scss/colors';
+
 // Appearance card-grid section
 
 .card__settings__appearance-section {
@@ -42,11 +44,11 @@
   grid-row: 2;
   display: inline-block;
   padding: 2px 10px;
-  border: 1px solid #378ADD;
+  border: 1px solid colors.$kobo-blue;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 700;
-  color: #378ADD;
+  color: colors.$kobo-dark-blue; // OC-29218: 7.38:1 on #EFF6FF, was #378ADD (3.30:1)
   background: #EFF6FF;
   margin: 10px 0;
   white-space: nowrap;
@@ -63,7 +65,7 @@
   width: 35px;
   height: 35px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   transition: transform 0.2s ease;
 }
@@ -91,23 +93,24 @@
   gap: 6px;
   padding: 10px 6px 8px;
   background: #fff;
-  border: 1.5px solid #CBD5E1;
+  border: 1.5px solid colors.$kobo-gray-400;
   border-radius: 6px;
   cursor: pointer;
   text-align: center;
   transition: border-color 0.15s ease, background 0.15s ease;
 
   &:hover {
-    border-color: #94A3B8;
+    // OC-29218: keep a 3:1 border on hover (#94A3B8 was 2.45:1 on #F8FAFC)
+    border-color: colors.$oc-input-border-hover; // proposed PRD input border hover (spec v0.6), 7.15:1 on #F8FAFC
     background: #F8FAFC;
   }
 
   &.is-selected {
-    border-color: #378ADD;
+    border-color: colors.$kobo-blue;
     background: #EFF6FF;
 
     .appearance-card__label {
-      color: #378ADD;
+      color: colors.$kobo-dark-blue; // OC-29218: 7.38:1 on #EFF6FF, was #378ADD (3.30:1)
       font-weight: 600;
     }
   }
@@ -137,7 +140,7 @@
 .appearance-columns-control {
   margin-top: 12px;
   padding: 12px 14px;
-  border: 1px solid #CBD5E1;
+  border: 1px solid colors.$kobo-gray-400;
   border-radius: 6px;
   background: #F8FAFC;
 }
@@ -173,11 +176,11 @@
   transition: background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    color: #378ADD;
+    color: colors.$kobo-hover-blue; // OC-29218: 5.62:1 on #F1F5F9, $kobo-blue was 4.41:1
   }
 
   &.is-active {
-    background: #378ADD;
+    background: colors.$kobo-blue;
     color: #fff;
     font-weight: 600;
   }
@@ -187,7 +190,7 @@
   margin-top: 8px;
   font-size: 11px;
   font-style: italic;
-  color: #64748B;
+  color: colors.$oc-placeholder;
 
   code {
     font-family: Menlo, Consolas, monospace;
@@ -204,7 +207,7 @@
 .appearance-custom-input {
   width: 100%;
   padding: 6px 10px;
-  border: 1.5px solid #CBD5E1;
+  border: 1.5px solid colors.$kobo-gray-400;
   border-radius: 6px;
   font-size: 13px;
   color: #020617;
@@ -212,7 +215,7 @@
 
   &:focus {
     outline: none;
-    border-color: #378ADD;
+    border-color: colors.$kobo-blue;
   }
 }
 
@@ -292,7 +295,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #378ADD;
+    outline: 2px solid colors.$kobo-blue;
     outline-offset: 2px;
     border-radius: 3px;
   }
@@ -308,7 +311,7 @@
   align-items: center;
   gap: 6px;
   background: #edf4fc;
-  border: 0.5px solid #378ADD;
+  border: 0.5px solid colors.$kobo-blue;
   border-radius: 10px;
   padding: 2px 9px;
   font-size: 11px;
@@ -327,7 +330,7 @@
 
     .pill-fill {
       height: 100%;
-      background: #378ADD;
+      background: colors.$kobo-blue;
       border-radius: 2px;
       display: block;
     }
@@ -341,7 +344,7 @@
   width: 35px;
   height: 35px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   flex-shrink: 0;
   margin-left: auto;
@@ -350,7 +353,7 @@
 
 .item-width__context {
   font-size: 11px;
-  color: #64748B;
+  color: colors.$oc-placeholder;
   font-style: italic;
   margin: 3px 0 0 0;
 }
@@ -371,7 +374,7 @@
 
 .item-width__advisory {
   font-size: 11px;
-  color: #94A3B8;
+  color: colors.$oc-secondary-text; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
   font-style: italic;
   margin-top: 6px;
 }
@@ -387,7 +390,7 @@
 
 .width-card {
   background: #fff;
-  border: 0.5px solid #CBD5E1;
+  border: 0.5px solid colors.$kobo-gray-400;
   border-radius: 5px;
   padding: 10px 6px 7px;
   display: flex;
@@ -398,16 +401,16 @@
   user-select: none;
 
   &:hover {
-    border-color: #94A3B8;
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
   }
 
   &:focus-visible {
-    outline: 2px solid #378ADD;
+    outline: 2px solid colors.$kobo-blue;
     outline-offset: 2px;
   }
 
   &.is-selected {
-    border: 1.5px solid #378ADD;
+    border: 1.5px solid colors.$kobo-blue;
     background: #edf4fc;
 
     .width-card__label {
@@ -435,7 +438,7 @@
   .bar-fill {
     height: 100%;
     border-radius: 3px;
-    background: #378ADD;
+    background: colors.$kobo-blue;
     opacity: 0.7;
   }
 }
@@ -453,7 +456,7 @@
     border-radius: 1px;
 
     &.on {
-      background: #378ADD;
+      background: colors.$kobo-blue;
       opacity: 0.65;
     }
   }
@@ -510,7 +513,7 @@
   }
 
   &:focus-visible {
-    outline: 2px solid #378ADD;
+    outline: 2px solid colors.$kobo-blue;
     outline-offset: 2px;
     border-radius: 3px;
   }
@@ -522,7 +525,7 @@
   align-items: center;
   gap: 6px;
   background: #edf4fc;
-  border: 0.5px solid #378ADD;
+  border: 0.5px solid colors.$kobo-blue;
   border-radius: 10px;
   padding: 2px 9px;
   font-size: 11px;
@@ -539,7 +542,7 @@
   width: 20px;
   height: 20px;
   font-size: 14px;
-  color: #475569;
+  color: colors.$oc-secondary-text;
   align-self: center;
   flex-shrink: 0;
   margin-left: auto;
@@ -552,7 +555,7 @@
 
 .group-cols__instruction {
   font-size: 11px;
-  color: #64748B;
+  color: colors.$oc-placeholder;
   font-style: italic;
   margin-top: 0;
   margin-bottom: 8px;
@@ -568,7 +571,7 @@
 // Same base style as .width-card
 .group-cols-card {
   background: #fff;
-  border: 0.5px solid #CBD5E1;
+  border: 0.5px solid colors.$kobo-gray-400;
   border-radius: 5px;
   padding: 10px 6px 7px;
   display: flex;
@@ -579,16 +582,16 @@
   user-select: none;
 
   &:hover {
-    border-color: #94A3B8;
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6); was #94A3B8 (2.56:1)
   }
 
   &:focus-visible {
-    outline: 2px solid #378ADD;
+    outline: 2px solid colors.$kobo-blue;
     outline-offset: 2px;
   }
 
   &.is-default {
-    border: 1px dashed #378ADD;
+    border: 1px dashed colors.$kobo-blue;
     background: #f5f9fe;
 
     .cols-preview {
@@ -599,7 +602,7 @@
   }
 
   &.is-selected {
-    border: 1.5px solid #378ADD;
+    border: 1.5px solid colors.$kobo-blue;
     background: #edf4fc;
 
     .group-cols-card__label {
@@ -651,7 +654,7 @@
 
 .group-cols__advisory {
   font-size: 11px;
-  color: #94A3B8;
+  color: colors.$oc-secondary-text; // OC-29218: PRD secondary text, 7.58:1 on white; was #94A3B8 (2.56:1)
   font-style: italic;
   margin-top: 6px;
 }

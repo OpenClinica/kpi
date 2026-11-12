@@ -7,7 +7,8 @@ placese. As soon as these are removed, we can simplify this file.
 */
 
 .react-tagsinput {
-  border: 1px solid colors.$kobo-gray-300;
+  // OC-29218: PRD 4.2 input border; gray-300 was 1.26:1, below 3:1
+  border: 1px solid colors.$kobo-gray-400;
   border-radius: 8px;
   padding: 8px 8px 4px;
 
@@ -22,7 +23,7 @@ placese. As soon as these are removed, we can simplify this file.
   &.react-tagsinput-invalid {
     .react-tagsinput-input {
       color: colors.$kobo-red;
-      border-bottom-color: colors.$kobo-mid-red;
+      border-bottom-color: colors.$kobo-red;
     }
   }
 }

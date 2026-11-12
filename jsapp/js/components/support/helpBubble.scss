@@ -66,15 +66,16 @@ $s-help-bubble-row-spacing: 20px;
   // mimic .k-drawer__link
   border-left: 3px solid transparent;
 
+  // OC-29218: $kobo-teal was 2.0:1 on white, below 3:1 for icons
   .help-bubble--open & {
-    color: colors.$kobo-teal;
+    color: colors.$kobo-dark-teal;
   }
 
   &:hover {
-    color: colors.$kobo-teal;
+    color: colors.$kobo-dark-teal;
 
     .help-bubble__trigger-counter {
-      background-color: colors.$kobo-teal;
+      background-color: colors.$kobo-dark-teal;
     }
   }
 
@@ -225,12 +226,12 @@ $s-help-bubble-row-spacing: 20px;
   }
 
   &:active {
-    color: colors.$kobo-teal;
+    color: colors.$kobo-dark-teal; // OC-29218: was $kobo-teal (2.05:1)
   }
 }
 
 .help-bubble__row.help-bubble__row--message-clickable.help-bubble__row--message-unread {
-  border-left: 5px solid colors.$kobo-mid-red;
+  border-left: 5px solid colors.$kobo-red;
   padding-left: $s-help-bubble-row-spacing - 5px;
 
   &:hover {
@@ -238,6 +239,6 @@ $s-help-bubble-row-spacing: 20px;
   }
 
   &:active {
-    border-left-color: colors.$kobo-teal;
+    border-left-color: colors.$kobo-dark-teal; // OC-29218: 7.42:1, was $kobo-teal (2.05:1)
   }
 }

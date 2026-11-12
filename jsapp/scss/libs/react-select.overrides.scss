@@ -12,7 +12,7 @@
     }
 
     .kobo-select .kobo-select__control {
-      border-color: colors.$kobo-mid-red;
+      border-color: colors.$kobo-red;
     }
   }
 }
@@ -54,7 +54,8 @@
 
   .kobo-select__control {
     box-shadow: none;
-    border: 1px solid colors.$kobo-gray-300;
+    // OC-29218: PRD 4.2 input border; gray-300 was 1.26:1, below 3:1
+    border: 1px solid colors.$kobo-gray-400;
     border-radius: 6px;
     color: colors.$kobo-gray-700;
     background-color: colors.$kobo-white;
@@ -68,7 +69,7 @@
     align-content: center;
 
     &:hover {
-      border-color: colors.$kobo-gray-300;
+      border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6), 7.58:1 on white
     }
 
     &.kobo-select__control--is-focused {
@@ -84,7 +85,8 @@
   }
 
   .kobo-select__placeholder {
-    color: colors.$kobo-gray-500;
+    // OC-29218: gray-500 was 2.26:1 on white, below 4.5:1
+    color: colors.$oc-placeholder; // PRD placeholder, 4.76:1 on white
   }
 
   .kobo-select__indicator-separator {

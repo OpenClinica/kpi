@@ -137,7 +137,7 @@ $k-select-menu-padding: 6px;
 .k-select.k-select--has-error {
   &.k-select--type-outline {
     .k-select__trigger {
-      border-color: colors.$kobo-mid-red;
+      border-color: colors.$kobo-red;
     }
   }
 
@@ -278,13 +278,14 @@ $k-select-menu-padding: 6px;
 
 .k-select.k-select--type-outline {
   .k-select__trigger {
-    border-color: colors.$kobo-gray-300;
+    // OC-29218: PRD 4.2 input border; gray-300 was 1.26:1, below 3:1
+    border-color: colors.$kobo-gray-400;
     background-color: colors.$kobo-white;
   }
 
   &:not(.k-select--is-menu-visible) .k-select__trigger:hover,
   &.k-select--is-pending .k-select__trigger {
-    border-color: colors.$kobo-gray-400;
+    border-color: colors.$oc-input-border-hover; // OC-29218: proposed PRD input border hover (spec v0.6), 7.58:1 on white
     color: colors.$kobo-gray-800;
   }
 
@@ -321,7 +322,7 @@ $k-select-menu-padding: 6px;
   // Smaller than the design, because there is also a single whitespace
   // character between the label and this mark
   margin-left: 2px;
-  color: colors.$kobo-mid-red;
+  color: colors.$kobo-red; // OC-29218: 6.47:1 on white, was $kobo-mid-red (2.43:1)
   font-size: 14px;
   // Magic number to align it similarly to Figma designs
   line-height: 16px;

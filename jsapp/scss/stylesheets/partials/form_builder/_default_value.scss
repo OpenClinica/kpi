@@ -20,7 +20,7 @@
     display: block;
     width: 100%;
     background-color: colors.$kobo-white;
-    border: 1px solid #CBD5E1;
+    border: 1px solid colors.$kobo-gray-400;
     border-radius: 4px;
     padding: 7px 10.5px;
     font-size: 13px;
@@ -36,7 +36,7 @@
     }
 
     &::placeholder {
-      color: #94A3B8;
+      color: colors.$oc-placeholder; // OC-29218: PRD placeholder, 4.76:1 on white; was #94A3B8 (2.56:1)
     }
   }
 

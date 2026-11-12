@@ -19,7 +19,8 @@
   padding: 0 1px 0 10px;
   border-width: button.$button-border-width;
   border-style: solid;
-  border-color: colors.$kobo-gray-300;
+  // OC-29218: PRD 4.2 input border; gray-300 was 1.26:1, below 3:1
+  border-color: colors.$kobo-gray-400;
   border-radius: button.$button-border-radius;
 
   &:not(:last-child) {
