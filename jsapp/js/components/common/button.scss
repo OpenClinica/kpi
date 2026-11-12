@@ -243,7 +243,7 @@ $button-border-radius: 6px;
   @include button-colors(
     $textColor: colors.$kobo-white,
     $mainBgColor: colors.$kobo-red,
-    $hoverBgColor: colors.$kobo-dark-red,
+    $hoverBgColor: colors.$oc-error-hover, // OC-29218: PRD error hover, was $kobo-dark-red #850000
   );
 }
 

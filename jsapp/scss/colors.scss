@@ -25,7 +25,7 @@ $kobo-gray-500: hsl(226deg 16% 70%); // #a6acbf
 // OC-29218 (WCAG 2.2 AA): accessible "Input border" value, 3.78:1 on white.
 // Below 4.5:1, so don't use it for text; use $kobo-gray-700 instead.
 // Was hsl(228deg 16% 82%) // #cacdd9
-$kobo-gray-400: #7d8396;
+$kobo-gray-400: var(--oc-input-border); // #7d8396
 
 // scroll bars, table lines, dividers, background of clickable icons on hover
 // when also in a highlighted table row
@@ -41,14 +41,16 @@ $kobo-gray-100: hsl(240deg 20% 98%); // #f9f9fb
 $kobo-white: hsl(0deg 0% 100%); // #ffffff
 
 /*
- * OC-29218 (WCAG 2.2 AA): PRD 4.2 values that have no Kobo shade. Use these
- * variables rather than repeating the hex values.
+ * OC-29218 (WCAG 2.2 AA): PRD 4.2 values that have no Kobo shade. They point
+ * at the OC token block (scss/oc/_oc_overrides.scss), so never apply a colour
+ * function to them (design spec 4.1).
  */
-$oc-secondary-bg: #eaeaea; // Secondary action background, #333847 text 9.71:1
-$oc-secondary-hover: #dcdcdc; // proposed PRD secondary hover (spec 9.1 Q1), 8.52:1
-$oc-secondary-text: #475569; // Secondary text (hints, help, icons), 7.58:1 on white
-$oc-placeholder: #64748b; // Placeholder, 4.76:1 on white
-$oc-input-border-hover: #475569; // proposed PRD input border hover (spec 9.1 Q1)
+$oc-secondary-bg: var(--oc-secondary-bg); // #eaeaea, #333847 text 9.71:1
+$oc-secondary-hover: var(--oc-secondary-hover); // #dcdcdc, 8.52:1
+$oc-secondary-text: var(--oc-secondary-text); // #475569, 7.58:1 on white
+$oc-placeholder: var(--oc-placeholder); // #64748b, 4.76:1 on white
+$oc-input-border-hover: var(--oc-input-border-hover); // #475569, 7.58:1 on white
+$oc-error-hover: var(--oc-error-hover); // #991b1b, white text 8.31:1
 
 /*
  * Primary colours & shades
@@ -57,9 +59,9 @@ $oc-input-border-hover: #475569; // proposed PRD input border hover (spec 9.1 Q1
 // OC-29218 (WCAG 2.2 AA): accessible primary palette. Exact hex values,
 // because rounded HSL shifts them off the approved design standard.
 // Was: dark #135991, hover #1977c2, blue #2095f3 (about 3:1 on white).
-$kobo-dark-blue: #00509a; // pressed/active, 8.03:1 with white
-$kobo-hover-blue: #0060bd; // 6.16:1 with white
-$kobo-blue: #0070dc; // primary action, 4.83:1 with white
+$kobo-dark-blue: var(--oc-primary-pressed); // #00509a, pressed/active, 8.03:1 with white
+$kobo-hover-blue: var(--oc-primary-hover); // #0060bd, 6.16:1 with white
+$kobo-blue: #0070dc; // --oc-primary, 4.83:1 with white. Kept as a literal because rgba() and color.change() are applied to it (design spec 4.1); ocTokens.tests.ts checks it
 $kobo-mid-blue: hsl(207deg 90% 77%); // #8fcaf9 (previously $kobo-alt-blue)
 $kobo-light-blue: hsl(207deg 88% 91%); // #d2e9fc (previously $kobo-mid-blue)
 $kobo-bg-blue: hsl(206deg 84% 95%); // #e8f4fd (previously $kobo-light-blue)
@@ -87,7 +89,7 @@ $kobo-dark-red: hsl(0deg 100% 26%); // #850000
 // OC-29218 (WCAG 2.2 AA): accessible error colour, also used for error
 // borders, 6.47:1 on white. Was hsl(0deg 100% 31%) // #9d0000 (previously
 // $kobo-dark-red)
-$kobo-red: #b91c1c;
+$kobo-red: var(--oc-error); // #b91c1c
 $kobo-mid-red: hsl(0deg 100% 75%); // #ff8080 (previously $kobo-red)
 $kobo-hover-red: hsl(0deg 100% 90%); // #ffcccc
 $kobo-light-red: hsl(0deg 100% 96%); // #ffe9e9
@@ -98,7 +100,7 @@ $kobo-light-amber: hsl(30deg 100% 90%); // #ffe8cc
 
 // OC-29218 (WCAG 2.2 AA): accessible "Success" value, 5.02:1 on white.
 // Was hsl(146deg 71% 31%) // #178949 (4.46:1, just under 4.5:1 for text)
-$kobo-dark-green: #15803d;
+$kobo-dark-green: var(--oc-success); // #15803d
 $kobo-green: hsl(146deg 72% 75%); // #92edba
 $kobo-light-green: hsl(147deg 69% 95%); // #e3f9db (previously $kobo-lime)
 

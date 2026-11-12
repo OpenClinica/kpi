@@ -1,4 +1,5 @@
 import { createTheme, rem } from '@mantine/core'
+import { ocTokens } from '../ocTokens'
 import { ActionIconThemeKobo } from './ActionIcon'
 import { AlertThemeKobo } from './Alert'
 import { ButtonThemeKobo } from './Button'
@@ -27,7 +28,7 @@ export const themeKobo = createTheme({
       'hsl(226, 16%, 42%)', // [2] #5a627d, $kobo-gray-700, (accessible) default text, inactive text, options text, buttons text, tabs text, notifications background, hover for popups and dropdowns
       'hsl(225, 16%, 58%)', // [3] #828ba5, $kobo-gray-600, (readable) clickable icons on hover
       'hsl(226, 16%, 70%)', // [4] #a6acbf, $kobo-gray-500, icons default (clickable), arrows and indicators default
-      '#7d8396', // [5] $kobo-gray-400, inactive icons, some decorative icons, input borders (OC-29218, was #cacdd9)
+      ocTokens['input-border'], // [5] $kobo-gray-400, inactive icons, some decorative icons, input borders (OC-29218, was #cacdd9)
       'hsl(227, 18%, 90%)', // [6] #e1e3ea, $kobo-gray-300, scroll bars, table lines, dividers, background of clickable icons on hover when also in a highlighted table row
       'hsl(228, 16%, 94%)', // [7] #edeef2, $kobo-gray-200, default light background, icons on hover, sidebar menu, table headings, …
       'hsl(240, 20%, 98%)', // [8] #f9f9fb, $kobo-gray-100, table row highlight on hover
@@ -38,11 +39,11 @@ export const themeKobo = createTheme({
       '#000',
       '#000',
       '#000',
-      // OC-29218 (WCAG 2.2 AA): matches $kobo-dark-blue, $kobo-hover-blue and
-      // $kobo-blue in colors.scss. Was #135991, #1977c2, #2095f3.
-      '#00509a',
-      '#0060bd',
-      '#0070dc',
+      // OC-29218 (WCAG 2.2 AA): PRD primary pressed, hover and primary, from
+      // the OC token block. Was #135991, #1977c2, #2095f3.
+      ocTokens['primary-pressed'],
+      ocTokens['primary-hover'],
+      ocTokens.primary,
       'hsl(207, 90%, 77%)', // #8fcaf9, (previously $kobo-alt-blue)
       'hsl(207, 88%, 91%)', // #d2e9fc, (previously $kobo-mid-blue)
       'hsl(206, 84%, 95%)', // #e8f4fd, (previously $kobo-light-blue)
@@ -66,7 +67,7 @@ export const themeKobo = createTheme({
       '#000',
       '#000',
       'hsl(0, 100%, 26%)', // #850000
-      '#b91c1c', // $kobo-red (OC-29218, was #9d0000)
+      ocTokens.error, // $kobo-red (OC-29218, was #9d0000)
       'hsl(0, 100%, 75%)', // #ff8080
       'hsl(0, 100%, 90%)', // #ffcccc
       'hsl(0, 100%, 96%)', // #ffe9e9
