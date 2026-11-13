@@ -1,4 +1,4 @@
-.input:has(:focus-visible) {
+.input:focus-visible {
   /* OC-29219: Mantine sets outline: none on inputs, so restore the standard ring. */
   outline: 2px solid var(--oc-focus, #0070dc);
   outline-offset: 2px;
