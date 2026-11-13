@@ -37,6 +37,12 @@
     padding: 20px 30px;
     border-radius: 10px;
 
+    // OC-29219: this panel is dark, so keyboard focus uses the white ring
+    // (as .oc-on-dark does elsewhere) instead of the blue one.
+    :focus-visible {
+      outline-color: var(--oc-focus-on-dark, #ffffff);
+    }
+
     label {
       display: inline-block;
       margin-bottom: 2px;
