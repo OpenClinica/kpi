@@ -59,10 +59,6 @@
     }
   }
 
-  input:focus + .toggle-switch__slider {
-    box-shadow: 0 0 1px colors.$kobo-teal;
-  }
-
   .toggle-switch__label {
     color: colors.$kobo-gray-800;
     font-size: variables.$base-font-size;

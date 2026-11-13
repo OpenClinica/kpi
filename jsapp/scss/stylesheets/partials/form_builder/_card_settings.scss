@@ -187,11 +187,6 @@
       vertical-align: middle;
       flex-shrink: 0;
 
-      &:focus-visible {
-        outline: 2px solid #3B82F6;
-        outline-offset: 2px;
-      }
-
       &:checked {
         background-color: #0EA5E9;
         border-color: #0EA5E9;
@@ -226,7 +221,6 @@
 
     &:focus {
       border-color: #3B82F6;
-      outline: none;
     }
   }
 

@@ -1,5 +1,7 @@
-.input:focus-within {
-  box-shadow: 0 0 0 2px var(--mantine-color-blue-7);
+.input:focus-visible {
+  /* OC-29219: Mantine sets outline: none on inputs, so restore the standard ring. */
+  outline: 2px solid var(--oc-focus, #0070dc);
+  outline-offset: 2px;
 }
 
 .input {

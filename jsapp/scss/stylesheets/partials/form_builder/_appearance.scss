@@ -211,7 +211,6 @@
   box-sizing: border-box;
 
   &:focus {
-    outline: none;
     border-color: #378ADD;
   }
 }
@@ -289,12 +288,6 @@
     .item-width__chev {
       transform: rotate(180deg);
     }
-  }
-
-  &:focus-visible {
-    outline: 2px solid #378ADD;
-    outline-offset: 2px;
-    border-radius: 3px;
   }
 }
 
@@ -401,11 +394,6 @@
     border-color: #94A3B8;
   }
 
-  &:focus-visible {
-    outline: 2px solid #378ADD;
-    outline-offset: 2px;
-  }
-
   &.is-selected {
     border: 1.5px solid #378ADD;
     background: #edf4fc;
@@ -508,12 +496,6 @@
       transform: rotate(180deg);
     }
   }
-
-  &:focus-visible {
-    outline: 2px solid #378ADD;
-    outline-offset: 2px;
-    border-radius: 3px;
-  }
 }
 
 // Same style as .item-width__pill
@@ -580,11 +562,6 @@
 
   &:hover {
     border-color: #94A3B8;
-  }
-
-  &:focus-visible {
-    outline: 2px solid #378ADD;
-    outline-offset: 2px;
   }
 
   &.is-default {

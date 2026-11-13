@@ -27,8 +27,6 @@
 
   &:focus {
     border-color: colors.$kobo-blue;
-    outline: 2px solid colors.$kobo-blue;
-    outline-offset: 1px;
   }
 
   &::placeholder {
