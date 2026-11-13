@@ -235,7 +235,11 @@ $k-select-menu-padding: 6px;
 
       &:focus-within {
         @include mixins.default-ui-focus;
-        // OC-29219: ring for the search box inside (its own outline is removed).
+      }
+
+      &:has(:focus-visible) {
+        // OC-29219: ring for the search box inside (its own outline is removed),
+        // keyboard focus only.
         outline: 2px solid var(--oc-focus, #0070dc);
         outline-offset: 2px;
       }
@@ -294,7 +298,11 @@ $k-select-menu-padding: 6px;
 
       &:focus-within {
         @include mixins.default-ui-focus;
-        // OC-29219: ring for the search box inside (its own outline is removed).
+      }
+
+      &:has(:focus-visible) {
+        // OC-29219: ring for the search box inside (its own outline is removed),
+        // keyboard focus only.
         outline: 2px solid var(--oc-focus, #0070dc);
         outline-offset: 2px;
       }
