@@ -148,18 +148,7 @@
         background-color: colors.$kobo-mid-red;
         color: colors.$kobo-white;
       }
-
-      &:focus {
-        outline-offset: 0;
-      }
     }
-  }
-
-  a:focus-visible {
-    // ux/accessibility: bring back the tabfocus ring              // Ours (fallback)                // Firefox
-    outline-color: -webkit-focus-ring-color; // Chrome & Safari
-    outline-offset: 4px;
-    outline-style: auto;
   }
 
   .registration--logo {
@@ -259,10 +248,6 @@
 
 .registration button[type='submit'] {
   margin-top: 28px;
-
-  &:focus {
-    outline: 2px solid colors.$kobo-light-storm;
-  }
 }
 
 .registration {

@@ -71,11 +71,9 @@ $projects-table-row-height: 36px;
       display: block;
       padding: $projects-table-row-padding;
 
-      // Keyboard-focus ring for links
+      // Keyboard focus: the link gets the global OC-29219 ring; the underline
+      // here is only a secondary cue.
       &:focus-visible .asset-name {
-        outline: 1px solid colors.$kobo-blue;
-        border-radius: 2px;
-        outline-offset: 4px;
         text-decoration-color: colors.$kobo-mid-blue;
         text-decoration-line: underline;
       }
@@ -205,6 +203,10 @@ $projects-table-row-height: 36px;
     &[data-field='checkbox'] :global .checkbox__input:focus-visible,
     &[data-field='checkbox']:hover :global .checkbox__input:focus-visible {
       @include mixins.default-ui-focus;
+      // OC-29219: the standard focus ring, restated so the hover outlines above
+      // (higher specificity than the global rule) don't replace it.
+      outline: 2px solid var(--oc-focus, #0070dc);
+      outline-offset: 2px;
     }
 
     // Hovering 'Project name' cell…
@@ -215,7 +217,8 @@ $projects-table-row-height: 36px;
     //  ->  De-emphasize the checkbox
     &[data-field='checkbox']:has(~ [data-field='name']:hover) {
       //  (Uses :has(), so not supported in Firefox yet)
-      :global .checkbox__input {
+      // OC-29219: never hide the keyboard focus ring
+      :global .checkbox__input:not(:focus-visible) {
         outline: none;
       }
     }

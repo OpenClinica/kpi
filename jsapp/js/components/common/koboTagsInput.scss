@@ -11,10 +11,8 @@ placese. As soon as these are removed, we can simplify this file.
   border-radius: 8px;
   padding: 8px 8px 4px;
 
-  // Instead of indicating focus by default way (i.e. the input element being
-  // highlighted), we highlight the wrapper.
-  // Use border-color instead of outline — outline draws outside the element and
-  // gets clipped by the modal__body overflow container when the input is at the top.
+  // OC-29219: the input itself gets the global focus ring (it fits inside this
+  // padded wrapper, so it isn't clipped); the border tint is secondary.
   &:focus-within {
     border-color: colors.$kobo-blue;
   }
@@ -66,18 +64,12 @@ placese. As soon as these are removed, we can simplify this file.
   margin-top: 2px;
   margin-bottom: 4px;
   margin-left: 4px;
-  outline: none;
   padding: 0;
   min-width: 90px;
 
   &::placeholder {
     color: colors.$kobo-gray-600;
     opacity: 1;
-  }
-
-  // Disable default focus styles in favor of highlighting the wrapper
-  &:focus-visible {
-    outline: none;
   }
 }
 

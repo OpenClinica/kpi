@@ -20,10 +20,6 @@ $k-select-menu-padding: 6px;
 .k-select .kobo-dropdown__trigger:focus-visible .k-select__trigger {
   @include mixins.default-ui-focus;
 }
-// And we need to remove the default styles from the de facto trigger
-.k-select .kobo-dropdown__trigger:focus-visible {
-  outline: none;
-}
 
 .k-select__trigger {
   @include mixins.centerRowFlex;
@@ -163,7 +159,8 @@ $k-select-menu-padding: 6px;
   font-size: 14px;
 
   &:focus-visible {
-    // wrapper element is handling that
+    // OC-29219: the trigger wrapper draws the focus ring (see
+    // `.k-select__trigger:focus-within`), as the search box fills it edge to edge.
     outline: none;
   }
 
@@ -238,6 +235,9 @@ $k-select-menu-padding: 6px;
 
       &:focus-within {
         @include mixins.default-ui-focus;
+        // OC-29219: ring for the search box inside (its own outline is removed).
+        outline: 2px solid var(--oc-focus, #0070dc);
+        outline-offset: 2px;
       }
 
       .k-icon.k-icon-caret-down,
@@ -294,6 +294,9 @@ $k-select-menu-padding: 6px;
 
       &:focus-within {
         @include mixins.default-ui-focus;
+        // OC-29219: ring for the search box inside (its own outline is removed).
+        outline: 2px solid var(--oc-focus, #0070dc);
+        outline-offset: 2px;
       }
 
       .k-icon.k-icon-caret-down,

@@ -90,13 +90,6 @@
       margin: 0;
     }
 
-    .card__header-title,
-    .card__header-hint {
-      &:focus {
-        @include mdl.form-builder-focus;
-      }
-    }
-
     .card__header-name {
         text-align: right;
         padding-bottom: 10px;
@@ -111,23 +104,7 @@
 
         &:focus {
             color: colors.$kobo-gray-800;
-
-            // OC-28704: match the ring added to .card__header-hint below —
-            // the color-only change above is too subtle to notice next to
-            // the hint box's box-shadow ring, so give this input the same
-            // treatment for a consistent keyboard-focus experience. Applied
-            // on plain :focus so browsers without :focus-visible support
-            // still get a ring; the @supports block below hides it again
-            // for mouse-click focus wherever :focus-visible is supported.
-            box-shadow: 0 0 0 2px colors.$kobo-mid-blue;
-            border-radius: 2px;
           }
-
-        @supports selector(:focus-visible) {
-            &:focus:not(:focus-visible) {
-                box-shadow: none;
-            }
-        }
 
         &::placeholder {
             color: inherit;
@@ -138,27 +115,6 @@
     .card__header-hint {
         color: inherit;
         font-weight: 400;
-
-        &:focus {
-            // OC-28704: unlike .card__header-title above, this input has no
-            // visible :focus treatment of its own — only the shared
-            // mdl.form-builder-focus outline (further up this file), which
-            // is suppressed globally in _base.scss — so an empty hint box
-            // gave keyboard users no sign it was selected. box-shadow
-            // survives the global outline: none !important suppression.
-            // Applied on plain :focus so browsers without :focus-visible
-            // support still get a ring; the @supports block below hides it
-            // again for mouse-click focus wherever :focus-visible is
-            // supported.
-            box-shadow: 0 0 0 2px colors.$kobo-mid-blue;
-            border-radius: 2px;
-        }
-
-        @supports selector(:focus-visible) {
-            &:focus:not(:focus-visible) {
-                box-shadow: none;
-            }
-        }
 
         &::placeholder {
             color: colors.$kobo-gray-700;

@@ -169,7 +169,6 @@ $s-form-builder-content-width: 1024px;
         // OpenClinica: gray underline only; blue on focus
         border: none;
         border-bottom: 2px solid colors.$kobo-gray-400;
-        outline: none;
         background: transparent;
 
         &:focus {
@@ -246,23 +245,6 @@ $s-form-builder-content-width: 1024px;
         &:hover {
           color: colors.$kobo-teal;
         }
-
-        &:focus {
-          // OC-28704: outline is suppressed globally in _base.scss, so use
-          // box-shadow (unaffected by outline: none !important) to give
-          // this link a visible keyboard-focus ring. Applied on plain
-          // :focus so browsers without :focus-visible support still get a
-          // ring; the @supports block below hides it again for mouse-click
-          // focus wherever :focus-visible is supported.
-          box-shadow: 0 0 0 2px colors.$kobo-mid-blue;
-          border-radius: 4px;
-        }
-
-        @supports selector(:focus-visible) {
-          &:focus:not(:focus-visible) {
-            box-shadow: none;
-          }
-        }
       }
     }
 
@@ -315,24 +297,6 @@ $s-form-builder-content-width: 1024px;
 
   &:hover:not(:disabled):not([disabled]) {
     color: colors.$kobo-gray-800;
-  }
-
-  &:focus {
-    // OC-28704: outline is suppressed globally in _base.scss, so use
-    // box-shadow (unaffected by outline: none !important) to restore a
-    // visible keyboard-focus ring, matching the OC-28489 pattern used for
-    // .asset-navigator-card__add-btn further down this file. Applied on
-    // plain :focus so browsers without :focus-visible support still get a
-    // ring; the @supports block below hides it again for mouse-click focus
-    // wherever :focus-visible is supported.
-    box-shadow: 0 0 0 2px colors.$kobo-mid-blue;
-    border-radius: 4px;
-  }
-
-  @supports selector(:focus-visible) {
-    &:focus:not(:focus-visible) {
-      box-shadow: none;
-    }
   }
 }
 
@@ -410,13 +374,6 @@ $s-form-builder-content-width: 1024px;
 
   &:hover:not(:disabled):not(.form-style-card--selected) {
     border-color: colors.$kobo-gray-500;
-  }
-
-  // Focus ring: _base.scss globally suppresses outline with !important,
-  // so use box-shadow (unaffected by outline:none) for keyboard visibility.
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 2px rgb(55 138 221 / 50%);
   }
 
   &--default:not(&--selected) {
@@ -629,12 +586,4 @@ $s-form-builder-content-width: 1024px;
       margin-bottom: 5px;
     }
   }
-}
-
-// OC-28489: focus ring for the Search Library "Add to form" button.
-// _base.scss suppresses :focus-visible outlines globally with !important,
-// so we use box-shadow (unaffected by outline:none) to restore visibility.
-.asset-navigator-card__add-btn:focus-visible {
-  box-shadow: 0 0 0 2px colors.$kobo-mid-blue !important;
-  border-radius: 4px;
 }

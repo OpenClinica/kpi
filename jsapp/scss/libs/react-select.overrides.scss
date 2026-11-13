@@ -76,6 +76,15 @@
     }
   }
 
+  // OC-29219: react-select focuses a hidden input and sets
+  // `outline: 0 !important` on the control, so draw the global focus ring on
+  // the container around it instead.
+  &:has(.kobo-select__control input:focus-visible) {
+    outline: 2px solid var(--oc-focus, #0070dc);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
+
   .kobo-select__input input {
     // HACK: most of the global styles are removed by react-select itself, but
     // some we need to remove ourself (until our global input[type="text"]

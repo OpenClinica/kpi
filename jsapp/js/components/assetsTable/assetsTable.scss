@@ -183,18 +183,6 @@ $assets-table-hover-bg: colors.$kobo-gray-100;
       background-color: colors.$kobo-gray-300;
     }
 
-    &[role='button']:focus {
-      // OC-28483: outline is suppressed globally in _base.scss; inset
-      // box-shadow is unaffected by both outline: none and parent overflow clipping.
-      box-shadow: inset 0 0 0 2px colors.$kobo-mid-blue;
-    }
-
-    @supports selector(:focus-visible) {
-      &[role='button']:focus:not(:focus-visible) {
-        box-shadow: none;
-      }
-    }
-
     .k-icon {
       font-size: variables.$base-font-size;
       // to take up space when empty

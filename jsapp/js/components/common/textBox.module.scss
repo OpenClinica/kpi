@@ -84,6 +84,10 @@ $label-leading: 20px;
 
   &:focus-within {
     @include mixins.default-ui-focus;
+    // OC-29219: the wrapper draws the focus ring for the input inside it (the
+    // input fills the wrapper, so a ring on the input would hit its border).
+    outline: 2px solid var(--oc-focus, #0070dc);
+    outline-offset: 2px;
   }
 }
 

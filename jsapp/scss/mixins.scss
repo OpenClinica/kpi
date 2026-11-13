@@ -52,7 +52,8 @@
   box-shadow: 0 0 6px color.change(colors.$kobo-storm, $alpha: 0.3);
 }
 
+// OC-29219: the focus ring itself now comes from the global `:focus-visible`
+// rule at the end of main.scss; this only adds a secondary border tint.
 @mixin default-ui-focus() {
-  outline: 3px solid colors.$kobo-mid-blue !important;
   border-color: colors.$kobo-blue !important;
 }

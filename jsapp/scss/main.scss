@@ -65,3 +65,19 @@
 
 // Print stylesheet
 @include meta.load-css('./libs/print');
+
+// OC-29219 (WCAG 2.4.7): global keyboard focus indicator. Must stay the last
+// rule in this stylesheet, without !important, so nothing later in the
+// cascade can beat it. Add `oc-on-dark` to coloured/dark surfaces.
+:focus-visible {
+  outline: 2px solid var(--oc-focus, #0070dc);
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.oc-on-dark :focus-visible {
+  outline-color: var(--oc-focus-on-dark, #ffffff);
+}

@@ -33,11 +33,4 @@ $layout-desktop-header-height: 64px;
   border-radius: 2px;
 }
 
-@mixin form-builder-focus {
-  outline-color: colors.$kobo-blue;
-  outline-offset: -2px;
-  outline-style: auto;
-  outline-width: 5px;
-}
-
 @include meta.load-css('mdl.layout');
