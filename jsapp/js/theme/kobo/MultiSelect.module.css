@@ -3,11 +3,11 @@
 }
 
 .input {
-  border-color: var(--mantine-color-gray-6);
+  border-color: var(--oc-input-border); /* OC-29218: PRD 4.2 input border #7d8396, 3.78:1 */
 }
 
 .inputField::placeholder {
-  color: var(--mantine-color-gray-4);
+  color: var(--oc-placeholder); /* OC-29218: PRD 4.2 placeholder #64748b, 4.76:1 on white */
   opacity: 1;
 }
 

@@ -1,5 +1,6 @@
 import type { ButtonVariant } from '@mantine/core'
 import { Button, rem } from '@mantine/core'
+import { ocTokens } from '../ocTokens'
 import classes from './Button.module.css'
 
 type ButtonVariantCustom =
@@ -51,7 +52,7 @@ export const ButtonThemeKobo = Button.extend({
         ...(props.variant === 'danger' && {
           '--button-color': 'var(--mantine-color-white)',
           '--button-bg': theme.colors.red[6],
-          '--button-hover': theme.colors.red[5],
+          '--button-hover': ocTokens['error-hover'], // OC-29218: PRD error hover, was red[5] #850000
         }),
         ...(props.variant === 'danger-secondary' && {
           '--button-color': theme.colors.red[6],

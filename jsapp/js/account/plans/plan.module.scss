@@ -94,7 +94,7 @@ $plan-badge-height: 38px;
   }
 
   &:hover {
-    background-color: color.adjust(colors.$kobo-blue, $lightness: -5%);
+    background-color: colors.$kobo-hover-blue;
   }
 }
 

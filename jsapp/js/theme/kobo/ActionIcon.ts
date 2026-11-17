@@ -1,4 +1,5 @@
 import { ActionIcon, rem } from '@mantine/core'
+import { ocTokens } from '../ocTokens'
 import classes from './ActionIcon.module.css'
 
 export const ActionIconThemeKobo = ActionIcon.extend({
@@ -30,7 +31,7 @@ export const ActionIconThemeKobo = ActionIcon.extend({
         ...(props.variant === 'danger' && {
           '--ai-color': 'var(--mantine-color-white)',
           '--ai-bg': theme.colors.red[6],
-          '--ai-hover': theme.colors.red[5],
+          '--ai-hover': ocTokens['error-hover'], // OC-29218: PRD error hover, was red[5] #850000
         }),
         ...(props.variant === 'danger-secondary' && {
           '--ai-color': theme.colors.red[5],

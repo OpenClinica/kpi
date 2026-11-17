@@ -1,3 +1,44 @@
+// OC accessibility tokens (OC-29218, WCAG 2.2 AA). Values from reqs-design
+// platform/wcag-accessibility/PRD.md §4.2, names from the design spec §4.1.
+// Change the PRD first, then this block and jsapp/js/theme/ocTokens.ts;
+// ocTokens.tests.ts fails if the two differ. Hover and pressed states are
+// their own tokens: never lighten() or darken() a token.
+:root {
+  --oc-primary: #0070dc;
+  --oc-primary-hover: #0060bd;
+  --oc-primary-pressed: #00509a;
+  --oc-secondary-bg: #eaeaea;
+  --oc-on-secondary: #333847;
+  --oc-header: #0678c7;
+  --oc-input-border: #7d8396;
+  --oc-body-text: #333847;
+  --oc-accent: #c2410c;
+  --oc-success: #15803d;
+  --oc-error: #b91c1c;
+  --oc-error-bg: #f8d7da;
+  --oc-link: #00509a;
+  --oc-secondary-text: #475569;
+  --oc-placeholder: #64748b;
+  --oc-accent-border: #9a3412;
+  --oc-focus: #0070dc;
+  --oc-focus-on-dark: #ffffff;
+  --oc-on-primary: #ffffff;
+  --oc-secondary-hover: #dcdcdc;
+  --oc-success-hover: #166534;
+  --oc-input-border-hover: #475569;
+  --oc-error-hover: #991b1b;
+  --oc-label-green: #15803d;
+  --oc-label-yellow: #a16207;
+  --oc-label-orange: #c2410c;
+  --oc-label-red: #cc1f30;
+  --oc-label-purple: #8a2fc4;
+  --oc-label-blue: #0a6fd1;
+  --oc-label-pink: #c4157f;
+  --oc-label-sky: #0077a8;
+  --oc-label-lime: #4d7c0f;
+  --oc-label-black: #475569;
+}
+
 .asset-label {
   display: inline-block;
 

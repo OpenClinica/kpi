@@ -433,7 +433,9 @@ tr .scorecell__radio:hover {
   padding: 8px 10px;
   border: 0;
   border-radius: 4px;
-  background-color: colors.$kobo-gray-500;
+  // OC-29218: gray-500 gave white text only 2.26:1; PRD 4.2 primary
+  // action (design note 6)
+  background-color: colors.$kobo-blue;
   color: colors.$kobo-white;
   font-weight: 600;
   text-transform: uppercase;
@@ -449,7 +451,7 @@ tr .scorecell__radio:hover {
   // when debugging, it's helpful to mock :hover
   // &:hover, &.hover {
   &:hover {
-    background-color: colors.$kobo-blue;
+    background-color: colors.$kobo-hover-blue; // OC-29218: PRD 4.2 primary hover
     // see the comment on .btn--addrow:focus above — same nested-group
     // overlap fix, mouse side.
     z-index: z-indexes.$z-form-builder-add-row;
@@ -457,7 +459,7 @@ tr .scorecell__radio:hover {
 }
 
 .btn--addrow:hover ~ .survey__row__spacer-rule {
-  background-color: colors.$kobo-blue;
+  background-color: colors.$kobo-hover-blue;
 }
 
 .survey__row__spacer-rule {

@@ -203,14 +203,16 @@ $s-form-builder-content-width: 1024px;
       gap: 10px;
       padding-right: 10px;
 
-      // OpenClinica: outlined style for secondary (back) button
+      // OpenClinica: secondary (back) button. OC-29218 (WCAG 2.2 AA): uses the
+      // accessible "Secondary action" values instead of the blue outline; the
+      // transparent border keeps the header layout unchanged.
       .k-button.k-button--type-secondary {
-        background-color: colors.$kobo-white;
-        border: 2px solid colors.$kobo-blue;
-        color: colors.$kobo-blue;
+        background-color: colors.$oc-secondary-bg;
+        border: 2px solid transparent;
+        color: colors.$kobo-gray-800;
 
         &:hover:not([disabled]) {
-          background-color: colors.$kobo-bg-blue;
+          background-color: colors.$oc-secondary-hover; // proposed PRD secondary hover (spec v0.6)
         }
       }
     }
@@ -425,12 +427,12 @@ $s-form-builder-content-width: 1024px;
 
   &--selected {
     --form-card-bg: #{colors.$kobo-bg-blue};
-    border-color: #378ADD;
+    border-color: colors.$kobo-blue;
     background: colors.$kobo-bg-blue;
-    box-shadow: inset 0 0 0 1px #378ADD;
+    box-shadow: inset 0 0 0 1px colors.$kobo-blue;
 
     .form-style-card__icon svg {
-      color: #378ADD;
+      color: colors.$kobo-blue;
     }
   }
 
@@ -614,7 +616,7 @@ $s-form-builder-content-width: 1024px;
 
     .settings__input {
       input[type='text'] {
-        border: 1px solid colors.$kobo-gray-300;
+        border: 1px solid colors.$kobo-gray-400;
       }
     }
   }

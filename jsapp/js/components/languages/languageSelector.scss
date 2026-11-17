@@ -68,7 +68,8 @@
 
 .language-selector__selected-language,
 .language-selector__search-box {
-  border: 2px solid colors.$kobo-gray-300;
+  // OC-29218: PRD 4.2 input border; gray-300 was 1.26:1, below 3:1
+  border: 2px solid colors.$kobo-gray-400;
   border-radius: 6px;
   height: 40px;
   line-height: 40px - (2 * 2px); // minus the border
